@@ -51,13 +51,33 @@ export default function FormPage() {
   }, [isDemo]);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const MAX_BYTES = 5 * 1024 * 1024;
     const files = Array.from(e.target.files || []);
     const remaining = 5 - photos.length;
-    const newFiles = files.slice(0, remaining);
 
-    setPhotos((prev) => [...prev, ...newFiles]);
+    const valid: File[] = [];
+    const rejected: string[] = [];
+    for (const f of files.slice(0, remaining)) {
+      if (!f.type.startsWith("image/")) {
+        rejected.push(`${f.name} (not an image)`);
+        continue;
+      }
+      if (f.size > MAX_BYTES) {
+        rejected.push(`${f.name} (over 5MB)`);
+        continue;
+      }
+      valid.push(f);
+    }
 
-    newFiles.forEach((file) => {
+    if (rejected.length) {
+      setError(`Skipped: ${rejected.join(", ")}`);
+    } else {
+      setError("");
+    }
+
+    setPhotos((prev) => [...prev, ...valid]);
+
+    valid.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreviews((prev) => [...prev, reader.result as string]);

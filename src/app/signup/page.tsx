@@ -39,36 +39,33 @@ export default function SignupPage() {
 
     setLoading(true);
 
-    const { data: settingsData } = await supabase
-      .from("team_settings")
-      .select("admin_code, member_code")
-      .single();
+    const trimmedCode = inviteCode.trim();
 
-    if (!settingsData) {
-      setError("Unable to verify invitation code. Please contact admin.");
+    const { data: roleResult, error: rpcError } = await supabase.rpc(
+      "validate_invite_code",
+      { code: trimmedCode }
+    );
+
+    if (rpcError) {
+      setError("Unable to verify invitation code. Please try again.");
       setLoading(false);
       return;
     }
 
-    let role: "admin" | "member";
-    if (inviteCode.trim() === settingsData.admin_code) {
-      role = "admin";
-    } else if (inviteCode.trim() === settingsData.member_code) {
-      role = "member";
-    } else {
+    if (!roleResult) {
       setError("Invalid invitation code");
       setLoading(false);
       return;
     }
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           name,
           contact_no: contactNo,
-          role,
+          invite_code: trimmedCode,
         },
       },
     });

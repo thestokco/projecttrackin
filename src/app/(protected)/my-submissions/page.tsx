@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import { useUser } from "@/lib/user-context";
 import type { Submission } from "@/lib/types";
+import { parseDate } from "@/lib/date";
 import { format } from "date-fns";
 import { Pencil, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -131,10 +132,10 @@ export default function MySubmissionsPage() {
                     className="hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     <td className="px-4 py-3 text-sm">
-                      {format(new Date(s.submission_date), "dd MMM yyyy")}
+                      {format(parseDate(s.submission_date), "dd MMM yyyy")}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      {format(new Date(s.completion_date), "dd MMM yyyy")}
+                      {format(parseDate(s.completion_date), "dd MMM yyyy")}
                     </td>
                     <td className="px-4 py-3 text-sm font-mono">
                       {s.application_number}

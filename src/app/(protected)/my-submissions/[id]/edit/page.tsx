@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import { useUser } from "@/lib/user-context";
 import type { Submission } from "@/lib/types";
+import { parseDate } from "@/lib/date";
 import { format } from "date-fns";
 import { ArrowLeft, Save, CheckCircle } from "lucide-react";
 import Link from "next/link";
@@ -29,47 +30,44 @@ export default function EditSubmissionPage() {
   const [remark, setRemark] = useState("");
 
   useEffect(() => {
-    let data: Submission | null = null;
+    let cancelled = false;
 
-    if (isDemo) {
-      data = mockStore.getSubmission(id);
-    }
-
-    if (data) {
+    function applyData(data: Submission) {
+      if (profile && data.user_id !== profile.id) {
+        setError("You can only edit your own submissions.");
+        setSubmission(null);
+        return;
+      }
       setSubmission(data);
       setCompletionDate(data.completion_date);
       setApplicationNumber(data.application_number);
       setCableReturn(data.cable_return);
       setCableReturnDate(data.cable_return_date || "");
       setRemark(data.remark || "");
-      setLoading(false);
-      return;
     }
 
-    if (!isDemo) {
-      const supabase = createClient();
-      async function fetchSubmission() {
-        const { data } = await supabase
-          .from("submissions")
-          .select("*")
-          .eq("id", id)
-          .single();
-
-        if (data) {
-          setSubmission(data);
-          setCompletionDate(data.completion_date);
-          setApplicationNumber(data.application_number);
-          setCableReturn(data.cable_return);
-          setCableReturnDate(data.cable_return_date || "");
-          setRemark(data.remark || "");
-        }
-        setLoading(false);
+    async function load() {
+      if (isDemo) {
+        const data = mockStore.getSubmission(id);
+        if (data && !cancelled) applyData(data);
+        if (!cancelled) setLoading(false);
+        return;
       }
-      fetchSubmission();
-    } else {
-      setLoading(false);
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("submissions")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (data && !cancelled) applyData(data);
+      if (!cancelled) setLoading(false);
     }
-  }, [id, isDemo]);
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isDemo, profile]);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -155,7 +153,7 @@ export default function EditSubmissionPage() {
             <div>
               <label className="block text-sm font-medium mb-1 text-muted">Submission Date</label>
               <div className="px-4 py-2.5 bg-gray-50 border border-border rounded-lg text-sm">
-                {format(new Date(submission.submission_date), "dd MMM yyyy")}
+                {format(parseDate(submission.submission_date), "dd MMM yyyy")}
               </div>
             </div>
             <div>

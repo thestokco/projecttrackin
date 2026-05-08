@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import { useUser } from "@/lib/user-context";
 import type { Submission } from "@/lib/types";
+import { parseDate } from "@/lib/date";
 import { format } from "date-fns";
 import {
   ArrowUpDown,
@@ -264,7 +265,7 @@ export default function AllDataPage() {
                   >
                     <td className="px-4 py-3 text-sm font-medium text-primary">{s.user_name}</td>
                     <td className="px-4 py-3 text-sm">
-                      {s.completion_date ? format(new Date(s.completion_date), "dd MMM yyyy") : "-"}
+                      {s.completion_date ? format(parseDate(s.completion_date), "dd MMM yyyy") : "-"}
                     </td>
                     <td className="px-4 py-3 text-sm font-mono">{s.application_number}</td>
                     <td className="px-4 py-3">
@@ -273,7 +274,7 @@ export default function AllDataPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      {s.cable_return_date ? format(new Date(s.cable_return_date), "dd MMM yyyy") : "-"}
+                      {s.cable_return_date ? format(parseDate(s.cable_return_date), "dd MMM yyyy") : "-"}
                     </td>
                     <td className="px-4 py-3">
                       {s.photos && s.photos.length > 0 ? (

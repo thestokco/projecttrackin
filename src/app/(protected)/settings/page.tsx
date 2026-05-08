@@ -24,9 +24,11 @@ import {
 
 function generateCode(length = 8) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint32Array(length);
+  crypto.getRandomValues(bytes);
   let code = "";
   for (let i = 0; i < length; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
+    code += chars[bytes[i] % chars.length];
   }
   return code;
 }
@@ -39,7 +41,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showAdminCode, setShowAdminCode] = useState(false);
-  const [showMemberCode, setShowMemberCode] = useState(false);
+  const [showMemberCode, setShowMemberCode] = useState(true);
   const [regenerating, setRegenerating] = useState<string | null>(null);
   const [removeId, setRemoveId] = useState<string | null>(null);
 
@@ -58,7 +60,10 @@ export default function SettingsPage() {
   const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile) {
+      setLoading(false);
+      return;
+    }
 
     setEditName(profile.name);
     setEditEmail(profile.email);
@@ -73,18 +78,30 @@ export default function SettingsPage() {
 
     const supabase = createClient();
     async function fetchData() {
-      const settingsRes = await supabase
-        .from("team_settings")
-        .select("*")
-        .single();
-      if (settingsRes.data) setSettings(settingsRes.data);
-
       if (isAdmin) {
+        const settingsRes = await supabase
+          .from("team_settings")
+          .select("*")
+          .single();
+        if (settingsRes.data) setSettings(settingsRes.data);
+
         const membersRes = await supabase
           .from("profiles")
           .select("*")
           .order("created_at");
         if (membersRes.data) setMembers(membersRes.data);
+      } else {
+        const { data: memberCode } = await supabase.rpc(
+          "get_member_invite_code"
+        );
+        if (memberCode) {
+          setSettings({
+            id: "",
+            admin_code: "",
+            member_code: memberCode,
+            created_at: "",
+          });
+        }
       }
       setLoading(false);
     }
@@ -122,7 +139,15 @@ export default function SettingsPage() {
       setMembers((prev) => prev.filter((m) => m.id !== memberId));
     } else {
       const supabase = createClient();
-      await supabase.from("profiles").delete().eq("id", memberId);
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", memberId);
+      if (error) {
+        setRemoveId(null);
+        return;
+      }
+      setMembers((prev) => prev.filter((m) => m.id !== memberId));
     }
     setRemoveId(null);
   }
@@ -179,6 +204,11 @@ export default function SettingsPage() {
     e.preventDefault();
     setPasswordError("");
 
+    if (!currentPassword) {
+      setPasswordError("Current password is required");
+      return;
+    }
+
     if (newPassword.length < 6) {
       setPasswordError("New password must be at least 6 characters");
       return;
@@ -196,7 +226,15 @@ export default function SettingsPage() {
         setPasswordSaved(true);
         setTimeout(() => setPasswordSaved(false), 2000);
       } else {
+        if (!profile) throw new Error("Not signed in");
         const supabase = createClient();
+        const { error: reauthError } = await supabase.auth.signInWithPassword({
+          email: profile.email,
+          password: currentPassword,
+        });
+        if (reauthError) {
+          throw new Error("Current password is incorrect");
+        }
         const { error } = await supabase.auth.updateUser({
           password: newPassword,
         });
@@ -226,7 +264,19 @@ export default function SettingsPage() {
     );
   }
 
-  if (!settings) return null;
+  if (!profile) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <Settings className="w-6 h-6 text-primary" />
+          <h1 className="text-2xl font-bold">Settings</h1>
+        </div>
+        <div className="bg-amber-50 text-amber-800 border border-amber-200 rounded-lg p-4 text-sm">
+          Your profile could not be loaded. Please log out and sign up again, or contact your admin.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -321,6 +371,19 @@ export default function SettingsPage() {
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">
+                Current Password
+              </label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                placeholder="Enter current password"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
                 New Password
               </label>
               <input
@@ -356,47 +419,49 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-primary" />
-            Invitation Codes
-          </h2>
-          <p className="text-sm text-muted mb-5">
-            {isAdmin
-              ? "Share these codes with people who need to sign up. Admin code gives full access, member code gives limited access."
-              : "Share this code to invite new team members."}
-          </p>
+        {settings && (
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              Invitation Codes
+            </h2>
+            <p className="text-sm text-muted mb-5">
+              {isAdmin
+                ? "Share these codes with people who need to sign up. Admin code gives full access, member code gives limited access."
+                : "Share this code to invite new team members."}
+            </p>
 
-          <div className="space-y-4">
-            {isAdmin && (
+            <div className="space-y-4">
+              {isAdmin && settings.admin_code && (
+                <CodeField
+                  label="Admin Code"
+                  code={settings.admin_code}
+                  show={showAdminCode}
+                  onToggleShow={() => setShowAdminCode(!showAdminCode)}
+                  onCopy={() => handleCopy(settings.admin_code, "admin")}
+                  onRegenerate={() => handleRegenerate("admin")}
+                  copied={copiedField === "admin"}
+                  regenerating={regenerating === "admin"}
+                  variant="admin"
+                  canRegenerate
+                />
+              )}
+
               <CodeField
-                label="Admin Code"
-                code={settings.admin_code}
-                show={showAdminCode}
-                onToggleShow={() => setShowAdminCode(!showAdminCode)}
-                onCopy={() => handleCopy(settings.admin_code, "admin")}
-                onRegenerate={() => handleRegenerate("admin")}
-                copied={copiedField === "admin"}
-                regenerating={regenerating === "admin"}
-                variant="admin"
-                canRegenerate
+                label="Team Member Code"
+                code={settings.member_code}
+                show={showMemberCode}
+                onToggleShow={() => setShowMemberCode(!showMemberCode)}
+                onCopy={() => handleCopy(settings.member_code, "member")}
+                onRegenerate={() => handleRegenerate("member")}
+                copied={copiedField === "member"}
+                regenerating={regenerating === "member"}
+                variant="member"
+                canRegenerate={isAdmin}
               />
-            )}
-
-            <CodeField
-              label="Team Member Code"
-              code={settings.member_code}
-              show={showMemberCode}
-              onToggleShow={() => setShowMemberCode(!showMemberCode)}
-              onCopy={() => handleCopy(settings.member_code, "member")}
-              onRegenerate={() => handleRegenerate("member")}
-              copied={copiedField === "member"}
-              regenerating={regenerating === "member"}
-              variant="member"
-              canRegenerate={isAdmin}
-            />
+            </div>
           </div>
-        </div>
+        )}
 
         {isAdmin && (
           <div className="bg-card rounded-xl border border-border p-6">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import type { Submission } from "@/lib/types";
+import { parseDate } from "@/lib/date";
 import { format } from "date-fns";
 import { ArrowLeft, Download, Calendar, Clock, User, Hash, Cable } from "lucide-react";
 import Link from "next/link";
@@ -73,7 +74,7 @@ export default function DetailPage() {
           <InfoField
             icon={<Calendar className="w-4 h-4" />}
             label="Submission Date"
-            value={format(new Date(submission.submission_date), "dd MMM yyyy")}
+            value={format(parseDate(submission.submission_date), "dd MMM yyyy")}
           />
           <InfoField
             icon={<Clock className="w-4 h-4" />}
@@ -88,7 +89,7 @@ export default function DetailPage() {
           <InfoField
             icon={<Calendar className="w-4 h-4" />}
             label="Completion Date"
-            value={format(new Date(submission.completion_date), "dd MMM yyyy")}
+            value={format(parseDate(submission.completion_date), "dd MMM yyyy")}
           />
           <InfoField
             icon={<Hash className="w-4 h-4" />}
@@ -114,7 +115,7 @@ export default function DetailPage() {
             <InfoField
               icon={<Calendar className="w-4 h-4" />}
               label="Cable Return Date"
-              value={format(new Date(submission.cable_return_date), "dd MMM yyyy")}
+              value={format(parseDate(submission.cable_return_date), "dd MMM yyyy")}
             />
           )}
         </div>

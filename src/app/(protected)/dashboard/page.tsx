@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import type { Submission, Profile } from "@/lib/types";
+import { parseDate } from "@/lib/date";
 import { format, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from "date-fns";
 import { Users, AlertTriangle, Cable, Calendar } from "lucide-react";
 
@@ -192,7 +193,7 @@ export default function DashboardPage() {
                         <p className="text-xs text-muted">
                           By {s.user_name} on{" "}
                           {format(
-                            new Date(s.submission_date),
+                            parseDate(s.submission_date),
                             "dd MMM yyyy"
                           )}
                         </p>

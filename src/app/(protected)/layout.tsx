@@ -200,6 +200,15 @@ function LayoutShell({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
+          <Link
+            href="/settings"
+            className={`flex flex-col items-center gap-1 py-2 px-2 text-[10px] font-medium transition-colors ${
+              pathname.startsWith("/settings") ? "text-primary" : "text-muted"
+            }`}
+          >
+            <Settings className="w-5 h-5" />
+            Settings
+          </Link>
         </div>
       </nav>
 
