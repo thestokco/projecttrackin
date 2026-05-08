@@ -15,8 +15,8 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
+  UserX,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 function generateCode(length = 8) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -28,7 +28,6 @@ function generateCode(length = 8) {
 }
 
 export default function SettingsPage() {
-  const router = useRouter();
   const { profile, isAdmin } = useUser();
   const isDemo = mockStore.isDemoMode();
   const [settings, setSettings] = useState<TeamSettings | null>(null);
@@ -38,32 +37,37 @@ export default function SettingsPage() {
   const [showAdminCode, setShowAdminCode] = useState(false);
   const [showMemberCode, setShowMemberCode] = useState(false);
   const [regenerating, setRegenerating] = useState<string | null>(null);
+  const [removeId, setRemoveId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAdmin) {
-      router.push("/form");
-      return;
-    }
+    if (!profile) return;
 
     if (isDemo) {
       setSettings(mockStore.getTeamSettings());
-      setMembers(mockStore.getProfiles());
+      if (isAdmin) setMembers(mockStore.getProfiles());
       setLoading(false);
       return;
     }
 
     const supabase = createClient();
     async function fetchData() {
-      const [settingsRes, membersRes] = await Promise.all([
-        supabase.from("team_settings").select("*").single(),
-        supabase.from("profiles").select("*").order("created_at"),
-      ]);
+      const settingsRes = await supabase
+        .from("team_settings")
+        .select("*")
+        .single();
       if (settingsRes.data) setSettings(settingsRes.data);
-      if (membersRes.data) setMembers(membersRes.data);
+
+      if (isAdmin) {
+        const membersRes = await supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at");
+        if (membersRes.data) setMembers(membersRes.data);
+      }
       setLoading(false);
     }
     fetchData();
-  }, [isAdmin, isDemo, router]);
+  }, [profile, isAdmin, isDemo]);
 
   async function handleCopy(text: string, field: string) {
     await navigator.clipboard.writeText(text);
@@ -91,6 +95,16 @@ export default function SettingsPage() {
     setRegenerating(null);
   }
 
+  async function handleRemoveMember(memberId: string) {
+    if (isDemo) {
+      setMembers((prev) => prev.filter((m) => m.id !== memberId));
+    } else {
+      const supabase = createClient();
+      await supabase.from("profiles").delete().eq("id", memberId);
+    }
+    setRemoveId(null);
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -99,9 +113,7 @@ export default function SettingsPage() {
     );
   }
 
-  if (!isAdmin || !settings) {
-    return null;
-  }
+  if (!settings) return null;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -117,22 +129,26 @@ export default function SettingsPage() {
             Invitation Codes
           </h2>
           <p className="text-sm text-muted mb-5">
-            Share these codes with people who need to sign up. Admin code gives
-            full access, member code gives limited access.
+            {isAdmin
+              ? "Share these codes with people who need to sign up. Admin code gives full access, member code gives limited access."
+              : "Share this code to invite new team members."}
           </p>
 
           <div className="space-y-4">
-            <CodeField
-              label="Admin Code"
-              code={settings.admin_code}
-              show={showAdminCode}
-              onToggleShow={() => setShowAdminCode(!showAdminCode)}
-              onCopy={() => handleCopy(settings.admin_code, "admin")}
-              onRegenerate={() => handleRegenerate("admin")}
-              copied={copiedField === "admin"}
-              regenerating={regenerating === "admin"}
-              variant="admin"
-            />
+            {isAdmin && (
+              <CodeField
+                label="Admin Code"
+                code={settings.admin_code}
+                show={showAdminCode}
+                onToggleShow={() => setShowAdminCode(!showAdminCode)}
+                onCopy={() => handleCopy(settings.admin_code, "admin")}
+                onRegenerate={() => handleRegenerate("admin")}
+                copied={copiedField === "admin"}
+                regenerating={regenerating === "admin"}
+                variant="admin"
+                canRegenerate
+              />
+            )}
 
             <CodeField
               label="Team Member Code"
@@ -144,48 +160,87 @@ export default function SettingsPage() {
               copied={copiedField === "member"}
               regenerating={regenerating === "member"}
               variant="member"
+              canRegenerate={isAdmin}
             />
           </div>
         </div>
 
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-primary" />
-            Team Members ({members.length})
-          </h2>
+        {isAdmin && (
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Users className="w-5 h-5 text-primary" />
+              Team Members ({members.length})
+            </h2>
 
-          <div className="divide-y divide-border">
-            {members.map((m) => (
-              <div
-                key={m.id}
-                className="flex items-center justify-between py-3"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{m.name}</span>
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
-                        m.role === "admin"
-                          ? "bg-primary/10 text-primary"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {m.role}
+            <div className="divide-y divide-border">
+              {members.map((m) => (
+                <div
+                  key={m.id}
+                  className="flex items-center justify-between py-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{m.name}</span>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
+                          m.role === "admin"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {m.role}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted mt-0.5">
+                      {m.email} · {m.contact_no}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-muted">
+                      Joined {format(new Date(m.created_at), "dd MMM yyyy")}
                     </span>
-                  </div>
-                  <div className="text-xs text-muted mt-0.5">
-                    {m.email} · {m.contact_no}
+                    {m.id !== profile?.id && (
+                      <button
+                        onClick={() => setRemoveId(m.id)}
+                        className="p-1.5 rounded-lg text-muted hover:text-danger hover:bg-red-50 transition-colors"
+                        title="Remove member"
+                      >
+                        <UserX className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div className="text-xs text-muted">
-                  Joined{" "}
-                  {format(new Date(m.created_at), "dd MMM yyyy")}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {removeId && (
+        <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-2">Remove Member</h3>
+            <p className="text-sm text-muted mb-6">
+              Are you sure you want to remove this team member? They will no
+              longer be able to access the app.
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleRemoveMember(removeId)}
+                className="flex-1 bg-danger text-white py-2 rounded-lg font-medium hover:bg-red-600 transition-colors"
+              >
+                Remove
+              </button>
+              <button
+                onClick={() => setRemoveId(null)}
+                className="flex-1 border border-border py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -200,6 +255,7 @@ function CodeField({
   copied,
   regenerating,
   variant,
+  canRegenerate,
 }: {
   label: string;
   code: string;
@@ -210,6 +266,7 @@ function CodeField({
   copied: boolean;
   regenerating: boolean;
   variant: "admin" | "member";
+  canRegenerate: boolean;
 }) {
   return (
     <div
@@ -246,16 +303,18 @@ function CodeField({
             <Copy className="w-4 h-4" />
           )}
         </button>
-        <button
-          onClick={onRegenerate}
-          disabled={regenerating}
-          className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors disabled:opacity-50"
-          title="Generate new code"
-        >
-          <RefreshCw
-            className={`w-4 h-4 ${regenerating ? "animate-spin" : ""}`}
-          />
-        </button>
+        {canRegenerate && (
+          <button
+            onClick={onRegenerate}
+            disabled={regenerating}
+            className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors disabled:opacity-50"
+            title="Generate new code"
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${regenerating ? "animate-spin" : ""}`}
+            />
+          </button>
+        )}
       </div>
     </div>
   );
