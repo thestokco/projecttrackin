@@ -20,7 +20,7 @@ import {
 
 const navItems = [
   { href: "/form", label: "Form", icon: ClipboardList },
-  { href: "/my-submissions", label: "My Data", icon: FileText },
+  { href: "/my-submissions", label: "My Submission", icon: FileText },
   { href: "/all-data", label: "All Data", icon: Database },
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
 ];

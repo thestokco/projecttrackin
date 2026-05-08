@@ -161,6 +161,26 @@ export default function AllDataPage() {
 
   const colSpan = isAdmin ? 7 : 6;
 
+  async function downloadPhotos(e: React.MouseEvent, photos: string[], appNumber: string) {
+    e.stopPropagation();
+    for (let i = 0; i < photos.length; i++) {
+      const url = photos[i];
+      const ext = url.split(".").pop()?.split("?")[0] || "jpg";
+      const filename = `${appNumber}_${i + 1}.${ext}`;
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      } catch {
+        window.open(url, "_blank");
+      }
+    }
+  }
+
   function SortHeader({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) {
     return (
       <th
@@ -257,10 +277,13 @@ export default function AllDataPage() {
                     </td>
                     <td className="px-4 py-3">
                       {s.photos && s.photos.length > 0 ? (
-                        <span className="flex items-center gap-1 text-sm text-primary">
-                          <ImageIcon className="w-4 h-4" />
-                          {s.photos.length}
-                        </span>
+                        <button
+                          onClick={(e) => downloadPhotos(e, s.photos, s.application_number)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          {s.photos.length} Photos
+                        </button>
                       ) : (
                         <span className="text-sm text-muted">-</span>
                       )}
