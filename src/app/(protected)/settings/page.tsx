@@ -20,8 +20,10 @@ import {
   Save,
   CheckCircle,
   Lock,
+  Type,
 } from "lucide-react";
 import PullToRefresh from "@/components/PullToRefresh";
+import { getFontSize, setFontSize, FONT_SIZES, type FontSize } from "@/lib/font-size";
 
 function generateCode(length = 8) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -137,6 +139,11 @@ export default function SettingsPage() {
   }
 
   const [removeError, setRemoveError] = useState("");
+  const [fontSize, setFontSizeState] = useState<FontSize>("medium");
+
+  useEffect(() => {
+    setFontSizeState(getFontSize());
+  }, []);
 
   async function handleRemoveMember(memberId: string) {
     setRemoveError("");
@@ -518,6 +525,35 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
+
+        <div className="bg-card rounded-2xl border border-border/40 p-4 shadow-sm">
+          <h2 className="text-[14px] font-semibold mb-3 flex items-center gap-1.5">
+            <Type className="w-4 h-4 text-primary" />
+            Font Size
+          </h2>
+          <p className="text-[12px] text-muted mb-3">
+            Adjust text size across the app.
+          </p>
+          <div className="grid grid-cols-4 gap-2">
+            {FONT_SIZES.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => {
+                  setFontSize(opt.value);
+                  setFontSizeState(opt.value);
+                }}
+                className={`py-2 rounded-xl text-center font-medium transition-all ${
+                  fontSize === opt.value
+                    ? "gradient-bg text-white shadow-sm shadow-primary/20"
+                    : "bg-gray-50 text-foreground border border-border/60 hover:border-primary/30"
+                }`}
+                style={{ fontSize: ({ small: 11, medium: 13, large: 15, xlarge: 17 })[opt.value] }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {removeId && (

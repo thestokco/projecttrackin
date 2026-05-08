@@ -117,7 +117,7 @@ export default function DashboardPage() {
               icon={<TrendingUp className="w-4 h-4" />}
               label="Submissions"
               value={submissions.length}
-              color="from-indigo-500 to-violet-500"
+              color="from-slate-500 to-slate-600"
             />
             <StatCard
               icon={<Users className="w-4 h-4" />}
