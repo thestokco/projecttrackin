@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f5f7;
-  --foreground: #1e1e2e;
-  --primary: #475569;
-  --primary-hover: #334155;
-  --primary-light: #f1f5f9;
-  --danger: #ef4444;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --border: #e2e4e9;
-  --muted: #94a3b8;
-  --card: #ffffff;
-  --gradient-start: #334155;
-  --gradient-mid: #475569;
-  --gradient-end: #64748b;
+  --background: #f3f1ee;
+  --foreground: #2a2522;
+  --primary: #6b5b50;
+  --primary-hover: #544740;
+  --primary-light: #eee9e4;
+  --danger: #b84c42;
+  --success: #5a7a5e;
+  --warning: #b8883a;
+  --border: #d9d2cb;
+  --muted: #9a8e84;
+  --card: #fdfcfa;
+  --gradient-start: #544740;
+  --gradient-mid: #6b5b50;
+  --gradient-end: #8a7b6e;
   --font-scale: 1;
 }
 
@@ -98,7 +98,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .glass-dark {
-  background: linear-gradient(135deg, rgba(51, 65, 85, 0.97), rgba(71, 85, 105, 0.97));
+  background: linear-gradient(135deg, rgba(84, 71, 64, 0.97), rgba(107, 91, 80, 0.97));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -109,11 +109,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .card-hover:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(71, 85, 105, 0.1);
+  box-shadow: 0 4px 20px rgba(107, 91, 80, 0.1);
 }
 
 .pattern-dots {
-  background-image: radial-gradient(circle, rgba(71, 85, 105, 0.06) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(107, 91, 80, 0.06) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
