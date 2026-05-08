@@ -19,6 +19,7 @@ import {
   User,
   Save,
   CheckCircle,
+  Lock,
 } from "lucide-react";
 
 function generateCode(length = 8) {
@@ -48,6 +49,13 @@ export default function SettingsPage() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileError, setProfileError] = useState("");
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     if (!profile) return;
@@ -167,6 +175,49 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setPasswordError("");
+
+    if (newPassword.length < 6) {
+      setPasswordError("New password must be at least 6 characters");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError("New passwords do not match");
+      return;
+    }
+
+    setSavingPassword(true);
+
+    try {
+      if (isDemo) {
+        setPasswordSaved(true);
+        setTimeout(() => setPasswordSaved(false), 2000);
+      } else {
+        const supabase = createClient();
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword,
+        });
+        if (error) throw error;
+
+        setPasswordSaved(true);
+        setTimeout(() => setPasswordSaved(false), 2000);
+      }
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to change password";
+      setPasswordError(message);
+    } finally {
+      setSavingPassword(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -244,6 +295,63 @@ export default function SettingsPage() {
             >
               <Save className="w-4 h-4" />
               {savingProfile ? "Saving..." : "Save Profile"}
+            </button>
+          </form>
+        </div>
+
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Lock className="w-5 h-5 text-primary" />
+            Change Password
+          </h2>
+
+          {passwordSaved && (
+            <div className="bg-green-50 text-green-700 border border-green-200 rounded-lg p-3 mb-4 flex items-center gap-2 text-sm">
+              <CheckCircle className="w-4 h-4 flex-shrink-0" />
+              Password changed successfully
+            </div>
+          )}
+
+          {passwordError && (
+            <div className="bg-red-50 text-danger border border-red-200 rounded-lg p-3 mb-4 text-sm">
+              {passwordError}
+            </div>
+          )}
+
+          <form onSubmit={handleChangePassword} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                placeholder="Min 6 characters"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                placeholder="Confirm new password"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={savingPassword}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
+            >
+              <Lock className="w-4 h-4" />
+              {savingPassword ? "Changing..." : "Change Password"}
             </button>
           </form>
         </div>
