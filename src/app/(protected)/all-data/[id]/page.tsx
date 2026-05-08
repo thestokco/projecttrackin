@@ -49,8 +49,8 @@ export default function DetailPage() {
     return (
       <div className="text-center py-20">
         <p className="text-muted mb-4">Submission not found</p>
-        <Link href="/table" className="text-primary hover:underline">
-          Back to table
+        <Link href="/all-data" className="text-primary hover:underline">
+          Back to All Data
         </Link>
       </div>
     );
@@ -59,11 +59,11 @@ export default function DetailPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <Link
-        href="/table"
+        href="/all-data"
         className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Table
+        Back to All Data
       </Link>
 
       <h1 className="text-2xl font-bold mb-6">Submission Details</h1>

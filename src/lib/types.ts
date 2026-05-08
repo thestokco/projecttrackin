@@ -1,8 +1,11 @@
+export type UserRole = "admin" | "member";
+
 export interface Profile {
   id: string;
   name: string;
   email: string;
   contact_no: string;
+  role: UserRole;
   created_at: string;
 }
 

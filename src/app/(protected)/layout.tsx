@@ -1,24 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
+import { UserProvider, useUser } from "@/lib/user-context";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import InstallPrompt from "@/components/InstallPrompt";
 import {
   ClipboardList,
-  Table,
+  FileText,
+  Database,
   BarChart3,
   LogOut,
   Menu,
   X,
+  Shield,
 } from "lucide-react";
-import type { Profile } from "@/lib/types";
 
 const navItems = [
   { href: "/form", label: "Form", icon: ClipboardList },
-  { href: "/table", label: "Table", icon: Table },
+  { href: "/my-submissions", label: "My Data", icon: FileText },
+  { href: "/all-data", label: "All Data", icon: Database },
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
 ];
 
@@ -27,35 +30,19 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  return (
+    <UserProvider>
+      <LayoutShell>{children}</LayoutShell>
+    </UserProvider>
+  );
+}
+
+function LayoutShell({ children }: { children: React.ReactNode }) {
+  const { profile, isAdmin } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const isDemo = mockStore.isDemoMode();
-
-  useEffect(() => {
-    if (isDemo) {
-      setProfile(mockStore.getUser());
-      return;
-    }
-
-    const supabase = createClient();
-    async function loadProfile() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (data) setProfile(data);
-    }
-    loadProfile();
-  }, [isDemo]);
 
   async function handleLogout() {
     if (!isDemo) {
@@ -83,7 +70,7 @@ export default function ProtectedLayout({
             <nav className="hidden md:flex items-center gap-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = pathname.startsWith(item.href);
                 return (
                   <Link
                     key={item.href}
@@ -103,7 +90,8 @@ export default function ProtectedLayout({
 
             <div className="flex items-center gap-3">
               {profile && (
-                <span className="text-sm text-muted hidden sm:block">
+                <span className="text-sm text-muted hidden sm:flex items-center gap-1.5">
+                  {isAdmin && <Shield className="w-3.5 h-3.5 text-primary" />}
                   {profile.name}
                 </span>
               )}
@@ -138,7 +126,7 @@ export default function ProtectedLayout({
             <div className="px-4 py-3 space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = pathname.startsWith(item.href);
                 return (
                   <Link
                     key={item.href}
@@ -175,12 +163,12 @@ export default function ProtectedLayout({
         <div className="flex items-center justify-around h-16">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-1 py-2 px-3 text-xs font-medium transition-colors ${
+                className={`flex flex-col items-center gap-1 py-2 px-2 text-[10px] font-medium transition-colors ${
                   isActive ? "text-primary" : "text-muted"
                 }`}
               >

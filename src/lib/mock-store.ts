@@ -5,6 +5,7 @@ const DEMO_USER: Profile = {
   name: "John Doe",
   email: "john@example.com",
   contact_no: "+60 12-345 6789",
+  role: "admin",
   created_at: "2026-01-01T00:00:00Z",
 };
 
@@ -15,6 +16,7 @@ const DEMO_PROFILES: Profile[] = [
     name: "Jane Smith",
     email: "jane@example.com",
     contact_no: "+60 12-987 6543",
+    role: "member",
     created_at: "2026-01-15T00:00:00Z",
   },
   {
@@ -22,6 +24,7 @@ const DEMO_PROFILES: Profile[] = [
     name: "Ali Rahman",
     email: "ali@example.com",
     contact_no: "+60 11-222 3333",
+    role: "member",
     created_at: "2026-02-01T00:00:00Z",
   },
 ];
@@ -127,6 +130,16 @@ export const mockStore = {
     );
   },
 
+  getUserSubmissions(userId: string) {
+    return [...submissions]
+      .filter((s) => s.user_id === userId)
+      .sort(
+        (a, b) =>
+          new Date(b.submission_date).getTime() -
+          new Date(a.submission_date).getTime()
+      );
+  },
+
   getSubmission(id: string) {
     return submissions.find((s) => s.id === id) || null;
   },
@@ -140,6 +153,18 @@ export const mockStore = {
     submissions = [newSub, ...submissions];
     listeners.forEach((fn) => fn());
     return newSub;
+  },
+
+  updateSubmission(id: string, data: Partial<Submission>) {
+    submissions = submissions.map((s) =>
+      s.id === id ? { ...s, ...data } : s
+    );
+    listeners.forEach((fn) => fn());
+  },
+
+  deleteSubmission(id: string) {
+    submissions = submissions.filter((s) => s.id !== id);
+    listeners.forEach((fn) => fn());
   },
 
   subscribe(fn: () => void) {

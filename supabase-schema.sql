@@ -9,6 +9,7 @@ CREATE TABLE profiles (
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   contact_no TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member')),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -64,10 +65,16 @@ CREATE POLICY "Users can update own submissions"
   TO authenticated
   USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete own submissions"
+CREATE POLICY "Only admins can delete submissions"
   ON submissions FOR DELETE
   TO authenticated
-  USING (auth.uid() = user_id);
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'admin'
+    )
+  );
 
 -- 6. Create storage bucket for photos
 INSERT INTO storage.buckets (id, name, public)
@@ -101,12 +108,13 @@ CREATE INDEX idx_submissions_cable ON submissions(cable_return);
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id, name, email, contact_no)
+  INSERT INTO profiles (id, name, email, contact_no, role)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'name', ''),
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'contact_no', '')
+    COALESCE(NEW.raw_user_meta_data->>'contact_no', ''),
+    CASE WHEN (SELECT COUNT(*) FROM profiles) = 0 THEN 'admin' ELSE 'member' END
   );
   RETURN NEW;
 END;
