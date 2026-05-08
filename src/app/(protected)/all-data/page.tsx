@@ -6,7 +6,7 @@ import { mockStore } from "@/lib/mock-store";
 import { useUser } from "@/lib/user-context";
 import type { Submission } from "@/lib/types";
 import { parseDate } from "@/lib/date";
-import { format } from "date-fns";
+import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import {
   ArrowUpDown,
   Download,
@@ -40,19 +40,37 @@ export default function AllDataPage() {
   const [sortKey, setSortKey] = useState<SortKey>("submission_date");
   const [sortAsc, setSortAsc] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [page, setPage] = useState(1);
+
+  const monthOptions = (() => {
+    const options: { value: string; label: string }[] = [{ value: "", label: "All Months" }];
+    for (let i = 0; i < 12; i++) {
+      const d = subMonths(new Date(), i);
+      options.push({ value: format(d, "yyyy-MM"), label: format(d, "MMMM yyyy") });
+    }
+    return options;
+  })();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const perPage = 20;
 
   const fetchData = useCallback(async () => {
     setLoading(true);
 
+    let filterFrom = dateFrom;
+    let filterTo = dateTo;
+    if (selectedMonth) {
+      const monthDate = new Date(selectedMonth + "-01");
+      filterFrom = format(startOfMonth(monthDate), "yyyy-MM-dd");
+      filterTo = format(endOfMonth(monthDate), "yyyy-MM-dd");
+    }
+
     if (isDemo) {
       let data = mockStore.getSubmissions();
-      if (dateFrom) data = data.filter((s) => s.submission_date >= dateFrom);
-      if (dateTo) data = data.filter((s) => s.submission_date <= dateTo);
+      if (filterFrom) data = data.filter((s) => s.submission_date >= filterFrom);
+      if (filterTo) data = data.filter((s) => s.submission_date <= filterTo);
 
       data.sort((a, b) => {
         const aVal = a[sortKey];
@@ -76,13 +94,13 @@ export default function AllDataPage() {
       .select("*")
       .order(sortKey, { ascending: sortAsc });
 
-    if (dateFrom) query = query.gte("submission_date", dateFrom);
-    if (dateTo) query = query.lte("submission_date", dateTo);
+    if (filterFrom) query = query.gte("submission_date", filterFrom);
+    if (filterTo) query = query.lte("submission_date", filterTo);
 
     const { data } = await query;
     setSubmissions(data || []);
     setLoading(false);
-  }, [sortKey, sortAsc, dateFrom, dateTo, isDemo]);
+  }, [sortKey, sortAsc, dateFrom, dateTo, selectedMonth, isDemo]);
 
   useEffect(() => {
     fetchData();
@@ -226,12 +244,25 @@ export default function AllDataPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <Filter className="w-4 h-4 text-muted flex-shrink-0" />
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full">
-            <label className="text-sm text-muted whitespace-nowrap">Date range:</label>
-            <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="px-3 py-1.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            <span className="text-muted text-sm">to</span>
-            <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="px-3 py-1.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            {(dateFrom || dateTo) && (
-              <button onClick={() => { setDateFrom(""); setDateTo(""); setPage(1); }} className="text-sm text-primary hover:underline">Clear</button>
+            <select
+              value={selectedMonth}
+              onChange={(e) => { setSelectedMonth(e.target.value); setDateFrom(""); setDateTo(""); setPage(1); }}
+              className="px-3 py-1.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
+            >
+              {monthOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            {!selectedMonth && (
+              <>
+                <label className="text-sm text-muted whitespace-nowrap">Date range:</label>
+                <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="px-3 py-1.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                <span className="text-muted text-sm">to</span>
+                <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="px-3 py-1.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                {(dateFrom || dateTo) && (
+                  <button onClick={() => { setDateFrom(""); setDateTo(""); setPage(1); }} className="text-sm text-primary hover:underline">Clear</button>
+                )}
+              </>
             )}
           </div>
         </div>

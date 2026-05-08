@@ -6,7 +6,7 @@ import { mockStore } from "@/lib/mock-store";
 import type { Submission, Profile } from "@/lib/types";
 import { parseDate } from "@/lib/date";
 import { format, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from "date-fns";
-import { Users, AlertTriangle, Cable, Calendar } from "lucide-react";
+import { Users, Cable, Calendar } from "lucide-react";
 import PullToRefresh from "@/components/PullToRefresh";
 
 export default function DashboardPage() {
@@ -79,9 +79,6 @@ export default function DashboardPage() {
     end: new Date(),
   }).reverse();
 
-  const submitterIds = new Set(submissions.map((s) => s.user_id));
-  const missingMembers = profiles.filter((p) => !submitterIds.has(p.id));
-
   const pendingCableReturn = submissions.filter((s) => !s.cable_return);
 
   const submissionsByUser: Record<string, number> = {};
@@ -115,7 +112,7 @@ export default function DashboardPage() {
         <div className="text-center py-20 text-muted">Loading...</div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <StatCard
               icon={<Users className="w-5 h-5" />}
               label="Total Submissions"
@@ -129,12 +126,6 @@ export default function DashboardPage() {
               color="bg-purple-50 text-purple-600"
             />
             <StatCard
-              icon={<AlertTriangle className="w-5 h-5" />}
-              label="Missing Submissions"
-              value={missingMembers.length}
-              color="bg-amber-50 text-amber-600"
-            />
-            <StatCard
               icon={<Cable className="w-5 h-5" />}
               label="Pending Cable Return"
               value={pendingCableReturn.length}
@@ -143,35 +134,6 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
-                Members Missing Submissions
-              </h2>
-              {missingMembers.length === 0 ? (
-                <p className="text-sm text-muted py-4">
-                  All members have submitted for this month.
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {missingMembers.map((m) => (
-                    <div
-                      key={m.id}
-                      className="flex items-center justify-between px-4 py-3 bg-amber-50 rounded-lg"
-                    >
-                      <div>
-                        <p className="text-sm font-medium">{m.name}</p>
-                        <p className="text-xs text-muted">{m.email}</p>
-                      </div>
-                      <span className="text-xs font-medium text-amber-600 bg-amber-100 px-2 py-1 rounded-full">
-                        No submission
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Cable className="w-5 h-5 text-red-500" />
