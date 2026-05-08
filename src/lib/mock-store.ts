@@ -17,7 +17,7 @@ const DEMO_SUBMISSIONS: Submission[] = [];
 
 const DEMO_SETTINGS: TeamSettings = {
   id: "settings-1",
-  admin_code: "STOKADMIN",
+  admin_code: "PT26ADMIN",
   member_code: "STOKTEAM",
   created_at: "2026-01-01T00:00:00Z",
 };
