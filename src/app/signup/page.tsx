@@ -79,24 +79,6 @@ export default function SignupPage() {
       return;
     }
 
-    if (data.user) {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: data.user.id,
-        name,
-        email,
-        contact_no: contactNo,
-        role,
-      });
-
-      if (profileError) {
-        setError(
-          "Account created but profile setup failed. Please contact admin."
-        );
-        setLoading(false);
-        return;
-      }
-    }
-
     router.push("/form");
     router.refresh();
   }
