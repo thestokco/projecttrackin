@@ -88,7 +88,7 @@ export default function MySubmissionsPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">My Submissions</h1>
 
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead className="bg-gray-50 border-b border-border">

@@ -230,7 +230,7 @@ export default function AllDataPage() {
         </button>
       </div>
 
-      <div className="bg-card rounded-xl border border-border p-4 mb-4">
+      <div className="bg-card rounded-2xl border border-border/50 shadow-sm p-4 mb-4">
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
@@ -268,7 +268,7 @@ export default function AllDataPage() {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px]">
             <thead className="bg-gray-50 border-b border-border">

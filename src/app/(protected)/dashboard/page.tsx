@@ -117,24 +117,24 @@ export default function DashboardPage() {
               icon={<Users className="w-5 h-5" />}
               label="Total Submissions"
               value={submissions.length}
-              color="bg-blue-50 text-blue-600"
+              color="from-indigo-500 to-purple-500"
             />
             <StatCard
               icon={<Users className="w-5 h-5" />}
               label="Team Members"
               value={profiles.length}
-              color="bg-purple-50 text-purple-600"
+              color="from-emerald-500 to-teal-500"
             />
             <StatCard
               icon={<Cable className="w-5 h-5" />}
               label="Pending Cable Return"
               value={pendingCableReturn.length}
-              color="bg-red-50 text-red-600"
+              color="from-rose-500 to-pink-500"
             />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card rounded-xl border border-border p-6">
+            <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Cable className="w-5 h-5 text-red-500" />
                 Pending Cable Returns
@@ -171,7 +171,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-6 lg:col-span-2">
+            <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm lg:col-span-2">
               <h2 className="text-lg font-semibold mb-4">
                 Submissions by Member
               </h2>
@@ -228,14 +228,14 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-card rounded-xl border border-border p-5">
+    <div className={`rounded-2xl p-5 bg-gradient-to-br ${color} text-white shadow-lg card-hover`}>
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${color}`}>
+        <div className="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
           {icon}
         </div>
         <div>
-          <p className="text-2xl font-bold">{value}</p>
-          <p className="text-xs text-muted">{label}</p>
+          <p className="text-3xl font-bold">{value}</p>
+          <p className="text-xs text-white/80">{label}</p>
         </div>
       </div>
     </div>

@@ -69,7 +69,7 @@ export default function MySubmissionDetailPage() {
 
       <h1 className="text-2xl font-bold mb-6">Submission Details</h1>
 
-      <div className="bg-card rounded-xl border border-border p-6 space-y-6">
+      <div className="bg-card rounded-2xl border border-border/50 p-6 space-y-6 shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <InfoField icon={<Calendar className="w-4 h-4" />} label="Submission Date" value={format(parseDate(submission.submission_date), "dd MMM yyyy")} />
           <InfoField icon={<Clock className="w-4 h-4" />} label="Submission Time" value={submission.submission_time} />

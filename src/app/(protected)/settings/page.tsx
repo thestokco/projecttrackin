@@ -294,7 +294,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <User className="w-5 h-5 text-primary" />
             My Profile
@@ -349,7 +349,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={savingProfile}
-              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 gradient-bg text-white shadow-md shadow-primary/20 rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {savingProfile ? "Saving..." : "Save Profile"}
@@ -357,7 +357,7 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Lock className="w-5 h-5 text-primary" />
             Change Password
@@ -419,7 +419,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={savingPassword}
-              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 gradient-bg text-white shadow-md shadow-primary/20 rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
             >
               <Lock className="w-4 h-4" />
               {savingPassword ? "Changing..." : "Change Password"}
@@ -428,7 +428,7 @@ export default function SettingsPage() {
         </div>
 
         {settings && (
-          <div className="bg-card rounded-xl border border-border p-6">
+          <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
             <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
               Invitation Codes
@@ -472,7 +472,7 @@ export default function SettingsPage() {
         )}
 
         {isAdmin && (
-          <div className="bg-card rounded-xl border border-border p-6">
+          <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
               Team Members ({members.length})

@@ -183,23 +183,29 @@ export default function FormPage() {
   return (
     <PullToRefresh onRefresh={loadUser}>
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">New Submission</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center shadow-md shadow-primary/20">
+          <Send className="w-5 h-5 text-white" />
+        </div>
+        <h1 className="text-2xl font-bold">New Submission</h1>
+      </div>
 
       {success && (
-        <div className="bg-green-50 text-green-700 border border-green-200 rounded-lg p-4 mb-6 flex items-center gap-3">
+        <div className="bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 mb-6 flex items-center gap-3 animate-slide-up">
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
           Submission recorded successfully!
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 text-danger border border-red-200 rounded-lg p-3 mb-6 text-sm">
+        <div className="bg-red-50 text-danger border border-red-200 rounded-xl p-3 mb-6 text-sm flex items-center gap-2">
+          <div className="w-1.5 h-1.5 bg-danger rounded-full flex-shrink-0" />
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-card rounded-xl border border-border p-6 space-y-5">
+        <div className="bg-card rounded-2xl border border-border/50 p-6 space-y-5 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1 text-muted">
@@ -353,7 +359,7 @@ export default function FormPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full gradient-bg text-white shadow-lg shadow-primary/25 py-3 rounded-xl font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Send className="w-4 h-4" />
           {loading ? "Submitting..." : "Submit"}
