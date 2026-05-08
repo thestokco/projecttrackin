@@ -1,5 +1,12 @@
 export type UserRole = "admin" | "member";
 
+export interface TeamSettings {
+  id: string;
+  admin_code: string;
+  member_code: string;
+  created_at: string;
+}
+
 export interface Profile {
   id: string;
   name: string;

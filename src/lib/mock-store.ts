@@ -1,4 +1,4 @@
-import type { Profile, Submission } from "./types";
+import type { Profile, Submission, TeamSettings } from "./types";
 
 const DEMO_USER: Profile = {
   id: "demo-user-1",
@@ -106,7 +106,15 @@ const DEMO_SUBMISSIONS: Submission[] = [
   },
 ];
 
+const DEMO_SETTINGS: TeamSettings = {
+  id: "settings-1",
+  admin_code: "ADMIN2026",
+  member_code: "TEAM2026",
+  created_at: "2026-01-01T00:00:00Z",
+};
+
 let submissions = [...DEMO_SUBMISSIONS];
+let teamSettings = { ...DEMO_SETTINGS };
 let listeners: (() => void)[] = [];
 
 export const mockStore = {
@@ -165,6 +173,21 @@ export const mockStore = {
   deleteSubmission(id: string) {
     submissions = submissions.filter((s) => s.id !== id);
     listeners.forEach((fn) => fn());
+  },
+
+  getTeamSettings() {
+    return { ...teamSettings };
+  },
+
+  updateTeamSettings(data: { admin_code?: string; member_code?: string }) {
+    teamSettings = { ...teamSettings, ...data };
+    listeners.forEach((fn) => fn());
+  },
+
+  validateCode(code: string): "admin" | "member" | null {
+    if (code === teamSettings.admin_code) return "admin";
+    if (code === teamSettings.member_code) return "member";
+    return null;
   },
 
   subscribe(fn: () => void) {

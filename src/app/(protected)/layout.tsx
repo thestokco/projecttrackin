@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   Shield,
+  Settings,
 } from "lucide-react";
 
 const navItems = [
@@ -100,6 +101,18 @@ function LayoutShell({ children }: { children: React.ReactNode }) {
                   Demo
                 </span>
               )}
+              {isAdmin && (
+                <Link
+                  href="/settings"
+                  className={`hidden md:flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                    pathname.startsWith("/settings")
+                      ? "text-primary bg-primary/10"
+                      : "text-muted hover:text-foreground hover:bg-gray-100"
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="hidden md:flex items-center gap-2 px-3 py-2 text-sm text-muted hover:text-danger rounded-lg hover:bg-red-50 transition-colors"
@@ -143,6 +156,20 @@ function LayoutShell({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               })}
+              {isAdmin && (
+                <Link
+                  href="/settings"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    pathname.startsWith("/settings")
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted hover:text-foreground hover:bg-gray-100"
+                  }`}
+                >
+                  <Settings className="w-5 h-5" />
+                  Settings
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="flex w-full items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-danger hover:bg-red-50 transition-colors"

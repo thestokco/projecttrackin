@@ -1,0 +1,262 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { mockStore } from "@/lib/mock-store";
+import { useUser } from "@/lib/user-context";
+import type { Profile, TeamSettings } from "@/lib/types";
+import { format } from "date-fns";
+import {
+  Settings,
+  Shield,
+  Users,
+  Copy,
+  Check,
+  RefreshCw,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+
+function generateCode(length = 8) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
+export default function SettingsPage() {
+  const router = useRouter();
+  const { profile, isAdmin } = useUser();
+  const isDemo = mockStore.isDemoMode();
+  const [settings, setSettings] = useState<TeamSettings | null>(null);
+  const [members, setMembers] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [showAdminCode, setShowAdminCode] = useState(false);
+  const [showMemberCode, setShowMemberCode] = useState(false);
+  const [regenerating, setRegenerating] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      router.push("/form");
+      return;
+    }
+
+    if (isDemo) {
+      setSettings(mockStore.getTeamSettings());
+      setMembers(mockStore.getProfiles());
+      setLoading(false);
+      return;
+    }
+
+    const supabase = createClient();
+    async function fetchData() {
+      const [settingsRes, membersRes] = await Promise.all([
+        supabase.from("team_settings").select("*").single(),
+        supabase.from("profiles").select("*").order("created_at"),
+      ]);
+      if (settingsRes.data) setSettings(settingsRes.data);
+      if (membersRes.data) setMembers(membersRes.data);
+      setLoading(false);
+    }
+    fetchData();
+  }, [isAdmin, isDemo, router]);
+
+  async function handleCopy(text: string, field: string) {
+    await navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  }
+
+  async function handleRegenerate(type: "admin" | "member") {
+    setRegenerating(type);
+    const newCode = generateCode();
+    const update =
+      type === "admin" ? { admin_code: newCode } : { member_code: newCode };
+
+    if (isDemo) {
+      mockStore.updateTeamSettings(update);
+      setSettings(mockStore.getTeamSettings());
+    } else {
+      const supabase = createClient();
+      await supabase
+        .from("team_settings")
+        .update(update)
+        .eq("id", settings!.id);
+      setSettings((prev) => (prev ? { ...prev, ...update } : prev));
+    }
+    setRegenerating(null);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-muted">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAdmin || !settings) {
+    return null;
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="flex items-center gap-3 mb-6">
+        <Settings className="w-6 h-6 text-primary" />
+        <h1 className="text-2xl font-bold">Settings</h1>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
+            <Shield className="w-5 h-5 text-primary" />
+            Invitation Codes
+          </h2>
+          <p className="text-sm text-muted mb-5">
+            Share these codes with people who need to sign up. Admin code gives
+            full access, member code gives limited access.
+          </p>
+
+          <div className="space-y-4">
+            <CodeField
+              label="Admin Code"
+              code={settings.admin_code}
+              show={showAdminCode}
+              onToggleShow={() => setShowAdminCode(!showAdminCode)}
+              onCopy={() => handleCopy(settings.admin_code, "admin")}
+              onRegenerate={() => handleRegenerate("admin")}
+              copied={copiedField === "admin"}
+              regenerating={regenerating === "admin"}
+              variant="admin"
+            />
+
+            <CodeField
+              label="Team Member Code"
+              code={settings.member_code}
+              show={showMemberCode}
+              onToggleShow={() => setShowMemberCode(!showMemberCode)}
+              onCopy={() => handleCopy(settings.member_code, "member")}
+              onRegenerate={() => handleRegenerate("member")}
+              copied={copiedField === "member"}
+              regenerating={regenerating === "member"}
+              variant="member"
+            />
+          </div>
+        </div>
+
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary" />
+            Team Members ({members.length})
+          </h2>
+
+          <div className="divide-y divide-border">
+            {members.map((m) => (
+              <div
+                key={m.id}
+                className="flex items-center justify-between py-3"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{m.name}</span>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
+                        m.role === "admin"
+                          ? "bg-primary/10 text-primary"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {m.role}
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted mt-0.5">
+                    {m.email} · {m.contact_no}
+                  </div>
+                </div>
+                <div className="text-xs text-muted">
+                  Joined{" "}
+                  {format(new Date(m.created_at), "dd MMM yyyy")}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CodeField({
+  label,
+  code,
+  show,
+  onToggleShow,
+  onCopy,
+  onRegenerate,
+  copied,
+  regenerating,
+  variant,
+}: {
+  label: string;
+  code: string;
+  show: boolean;
+  onToggleShow: () => void;
+  onCopy: () => void;
+  onRegenerate: () => void;
+  copied: boolean;
+  regenerating: boolean;
+  variant: "admin" | "member";
+}) {
+  return (
+    <div
+      className={`rounded-lg border p-4 ${
+        variant === "admin"
+          ? "border-primary/30 bg-primary/5"
+          : "border-border bg-gray-50"
+      }`}
+    >
+      <label className="block text-sm font-medium mb-2">{label}</label>
+      <div className="flex items-center gap-2">
+        <div className="flex-1 px-4 py-2.5 bg-white border border-border rounded-lg font-mono text-sm tracking-wider select-all">
+          {show ? code : "••••••••"}
+        </div>
+        <button
+          onClick={onToggleShow}
+          className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors"
+          title={show ? "Hide" : "Show"}
+        >
+          {show ? (
+            <EyeOff className="w-4 h-4" />
+          ) : (
+            <Eye className="w-4 h-4" />
+          )}
+        </button>
+        <button
+          onClick={onCopy}
+          className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors"
+          title="Copy"
+        >
+          {copied ? (
+            <Check className="w-4 h-4 text-green-600" />
+          ) : (
+            <Copy className="w-4 h-4" />
+          )}
+        </button>
+        <button
+          onClick={onRegenerate}
+          disabled={regenerating}
+          className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors disabled:opacity-50"
+          title="Generate new code"
+        >
+          <RefreshCw
+            className={`w-4 h-4 ${regenerating ? "animate-spin" : ""}`}
+          />
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -29,11 +29,24 @@ CREATE TABLE submissions (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Enable Row Level Security
+-- 3. Create team_settings table (invitation codes)
+CREATE TABLE team_settings (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  admin_code TEXT NOT NULL,
+  member_code TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Insert default codes (change these after first login!)
+INSERT INTO team_settings (admin_code, member_code)
+VALUES ('ADMIN2026', 'TEAM2026');
+
+-- 4. Enable Row Level Security
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE team_settings ENABLE ROW LEVEL SECURITY;
 
--- 4. Profiles policies - all authenticated users can read all profiles
+-- 5. Profiles policies
 CREATE POLICY "Anyone can view profiles"
   ON profiles FOR SELECT
   TO authenticated
@@ -49,7 +62,7 @@ CREATE POLICY "Users can update own profile"
   TO authenticated
   USING (auth.uid() = id);
 
--- 5. Submissions policies - all authenticated users can read/write
+-- 6. Submissions policies
 CREATE POLICY "Anyone can view submissions"
   ON submissions FOR SELECT
   TO authenticated
@@ -76,11 +89,30 @@ CREATE POLICY "Only admins can delete submissions"
     )
   );
 
--- 6. Create storage bucket for photos
+-- 7. Team settings policies
+-- Anyone can read codes during signup (needed for code validation)
+CREATE POLICY "Anyone can read team settings"
+  ON team_settings FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+-- Only admins can update codes
+CREATE POLICY "Only admins can update team settings"
+  ON team_settings FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'admin'
+    )
+  );
+
+-- 8. Create storage bucket for photos
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('submission-photos', 'submission-photos', true);
 
--- 7. Storage policies
+-- 9. Storage policies
 CREATE POLICY "Anyone can view photos"
   ON storage.objects FOR SELECT
   TO authenticated
@@ -96,15 +128,16 @@ CREATE POLICY "Users can delete own photos"
   TO authenticated
   USING (bucket_id = 'submission-photos');
 
--- 8. Enable realtime for submissions table
+-- 10. Enable realtime for submissions table
 ALTER PUBLICATION supabase_realtime ADD TABLE submissions;
 
--- 9. Create indexes for performance
+-- 11. Create indexes for performance
 CREATE INDEX idx_submissions_date ON submissions(submission_date);
 CREATE INDEX idx_submissions_user ON submissions(user_id);
 CREATE INDEX idx_submissions_cable ON submissions(cable_return);
 
--- 10. Auto-create profile on signup (trigger)
+-- 12. Auto-create profile on signup (trigger)
+-- Role is passed from the signup form via user metadata
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -114,7 +147,7 @@ BEGIN
     COALESCE(NEW.raw_user_meta_data->>'name', ''),
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'contact_no', ''),
-    CASE WHEN (SELECT COUNT(*) FROM profiles) = 0 THEN 'admin' ELSE 'member' END
+    COALESCE(NEW.raw_user_meta_data->>'role', 'member')
   );
   RETURN NEW;
 END;
