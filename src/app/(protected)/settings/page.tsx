@@ -16,6 +16,9 @@ import {
   Eye,
   EyeOff,
   UserX,
+  User,
+  Save,
+  CheckCircle,
 } from "lucide-react";
 
 function generateCode(length = 8) {
@@ -28,7 +31,7 @@ function generateCode(length = 8) {
 }
 
 export default function SettingsPage() {
-  const { profile, isAdmin } = useUser();
+  const { profile, isAdmin, updateProfile } = useUser();
   const isDemo = mockStore.isDemoMode();
   const [settings, setSettings] = useState<TeamSettings | null>(null);
   const [members, setMembers] = useState<Profile[]>([]);
@@ -39,8 +42,19 @@ export default function SettingsPage() {
   const [regenerating, setRegenerating] = useState<string | null>(null);
   const [removeId, setRemoveId] = useState<string | null>(null);
 
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editContact, setEditContact] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileError, setProfileError] = useState("");
+
   useEffect(() => {
     if (!profile) return;
+
+    setEditName(profile.name);
+    setEditEmail(profile.email);
+    setEditContact(profile.contact_no);
 
     if (isDemo) {
       setSettings(mockStore.getTeamSettings());
@@ -105,6 +119,54 @@ export default function SettingsPage() {
     setRemoveId(null);
   }
 
+  async function handleSaveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (!profile) return;
+
+    setProfileError("");
+    setSavingProfile(true);
+
+    const updates = {
+      name: editName.trim(),
+      email: editEmail.trim(),
+      contact_no: editContact.trim(),
+    };
+
+    if (!updates.name || !updates.email || !updates.contact_no) {
+      setProfileError("All fields are required");
+      setSavingProfile(false);
+      return;
+    }
+
+    try {
+      if (isDemo) {
+        updateProfile(updates);
+      } else {
+        const supabase = createClient();
+        const { error } = await supabase
+          .from("profiles")
+          .update(updates)
+          .eq("id", profile.id);
+        if (error) throw error;
+        updateProfile(updates);
+      }
+
+      if (isAdmin) {
+        setMembers((prev) =>
+          prev.map((m) => (m.id === profile.id ? { ...m, ...updates } : m))
+        );
+      }
+
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 2000);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to save";
+      setProfileError(message);
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -123,6 +185,69 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-6">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <User className="w-5 h-5 text-primary" />
+            My Profile
+          </h2>
+
+          {profileSaved && (
+            <div className="bg-green-50 text-green-700 border border-green-200 rounded-lg p-3 mb-4 flex items-center gap-2 text-sm">
+              <CheckCircle className="w-4 h-4 flex-shrink-0" />
+              Profile updated successfully
+            </div>
+          )}
+
+          {profileError && (
+            <div className="bg-red-50 text-danger border border-red-200 rounded-lg p-3 mb-4 text-sm">
+              {profileError}
+            </div>
+          )}
+
+          <form onSubmit={handleSaveProfile} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Name</label>
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Contact Number
+              </label>
+              <input
+                type="tel"
+                value={editContact}
+                onChange={(e) => setEditContact(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              {savingProfile ? "Saving..." : "Save Profile"}
+            </button>
+          </form>
+        </div>
+
         <div className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />

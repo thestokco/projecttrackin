@@ -9,12 +9,14 @@ interface UserContextType {
   profile: Profile | null;
   loading: boolean;
   isAdmin: boolean;
+  updateProfile: (data: Partial<Profile>) => void;
 }
 
 const UserContext = createContext<UserContextType>({
   profile: null,
   loading: true,
   isAdmin: false,
+  updateProfile: () => {},
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -51,12 +53,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     loadProfile();
   }, [isDemo]);
 
+  function updateProfile(data: Partial<Profile>) {
+    setProfile((prev) => (prev ? { ...prev, ...data } : prev));
+  }
+
   return (
     <UserContext.Provider
       value={{
         profile,
         loading,
         isAdmin: profile?.role === "admin",
+        updateProfile,
       }}
     >
       {children}
