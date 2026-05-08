@@ -136,16 +136,21 @@ export default function SettingsPage() {
     setRegenerating(null);
   }
 
+  const [removeError, setRemoveError] = useState("");
+
   async function handleRemoveMember(memberId: string) {
+    setRemoveError("");
     if (isDemo) {
       setMembers((prev) => prev.filter((m) => m.id !== memberId));
     } else {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", memberId);
-      if (error) {
+      const res = await fetch("/api/admin/delete-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberId }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setRemoveError(data.error || "Failed to remove member");
         setRemoveId(null);
         return;
       }
@@ -472,6 +477,12 @@ export default function SettingsPage() {
               <Users className="w-5 h-5 text-primary" />
               Team Members ({members.length})
             </h2>
+
+            {removeError && (
+              <div className="bg-red-50 text-danger border border-red-200 rounded-lg p-3 mb-4 text-sm">
+                {removeError}
+              </div>
+            )}
 
             <div className="divide-y divide-border">
               {members.map((m) => (
