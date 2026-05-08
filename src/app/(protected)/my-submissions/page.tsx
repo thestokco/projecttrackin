@@ -86,43 +86,43 @@ export default function MySubmissionsPage() {
   return (
     <PullToRefresh onRefresh={fetchData}>
     <div>
-      <h1 className="text-2xl font-bold mb-6">My Submissions</h1>
+      <h1 className="text-lg font-bold mb-4">My Submissions</h1>
 
-      <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border/40 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px]">
-            <thead className="bg-gray-50 border-b border-border">
+          <table className="w-full min-w-[560px]">
+            <thead className="bg-gray-50/80 border-b border-border/60">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">
-                  Completion Date
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
+                  Completion
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">
-                  Application No.
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
+                  App No.
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">
-                  Cable Return
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
+                  Cable
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
                   Photos
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-border/40">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-muted">
+                  <td colSpan={6} className="px-3 py-10 text-center text-[13px] text-muted">
                     Loading...
                   </td>
                 </tr>
               ) : submissions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-muted">
+                  <td colSpan={6} className="px-3 py-10 text-center text-[13px] text-muted">
                     No submissions yet
                   </td>
                 </tr>
@@ -131,50 +131,50 @@ export default function MySubmissionsPage() {
                   <tr
                     key={s.id}
                     onClick={() => router.push(`/my-submissions/${s.id}`)}
-                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="hover:bg-gray-50/60 transition-colors cursor-pointer"
                   >
-                    <td className="px-4 py-3 text-sm">
-                      {format(parseDate(s.submission_date), "dd MMM yyyy")}
+                    <td className="px-3 py-2.5 text-[13px]">
+                      {format(parseDate(s.submission_date), "dd MMM yy")}
                     </td>
-                    <td className="px-4 py-3 text-sm">
-                      {format(parseDate(s.completion_date), "dd MMM yyyy")}
+                    <td className="px-3 py-2.5 text-[13px]">
+                      {format(parseDate(s.completion_date), "dd MMM yy")}
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono">
+                    <td className="px-3 py-2.5 text-[13px] font-mono">
                       {s.application_number}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2.5">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                           s.cable_return
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-red-50 text-red-600"
                         }`}
                       >
                         {s.cable_return ? "Yes" : "No"}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2.5">
                       {s.photos && s.photos.length > 0 ? (
                         <button
                           onClick={(e) => downloadPhotos(e, s.photos, s.application_number)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                          className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
                         >
-                          <Download className="w-3.5 h-3.5" />
-                          {s.photos.length} Photos
+                          <Download className="w-3 h-3" />
+                          {s.photos.length}
                         </button>
                       ) : (
-                        <span className="text-sm text-muted">-</span>
+                        <span className="text-[13px] text-muted">-</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2.5">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           router.push(`/my-submissions/${s.id}/edit`);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-primary bg-primary/8 rounded-lg hover:bg-primary/15 transition-colors"
                       >
-                        <Pencil className="w-3.5 h-3.5" />
+                        <Pencil className="w-3 h-3" />
                         Edit
                       </button>
                     </td>

@@ -115,60 +115,60 @@ export default function EditSubmissionPage() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><div className="text-muted">Loading...</div></div>;
+    return <div className="flex items-center justify-center py-16"><div className="text-[13px] text-muted">Loading...</div></div>;
   }
 
   if (!submission) {
     return (
-      <div className="text-center py-20">
-        <p className="text-muted mb-4">Submission not found</p>
-        <Link href="/my-submissions" className="text-primary hover:underline">Back to My Submissions</Link>
+      <div className="text-center py-16">
+        <p className="text-[13px] text-muted mb-3">Submission not found</p>
+        <Link href="/my-submissions" className="text-[13px] text-primary hover:underline">Back to My Submissions</Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <Link href={`/my-submissions/${id}`} className="flex items-center gap-2 text-sm text-muted hover:text-foreground mb-6">
-        <ArrowLeft className="w-4 h-4" />
+    <div className="max-w-lg mx-auto">
+      <Link href={`/my-submissions/${id}`} className="flex items-center gap-1.5 text-[13px] text-muted hover:text-foreground mb-4">
+        <ArrowLeft className="w-3.5 h-3.5" />
         Back to Details
       </Link>
 
-      <h1 className="text-2xl font-bold mb-6">Edit Submission</h1>
+      <h1 className="text-lg font-bold mb-4">Edit Submission</h1>
 
       {success && (
-        <div className="bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 mb-6 flex items-center gap-3 animate-slide-up">
-          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl p-3 mb-4 flex items-center gap-2 text-[13px] animate-slide-up">
+          <CheckCircle className="w-4 h-4 flex-shrink-0" />
           Saved successfully! Redirecting...
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 text-danger border border-red-200 rounded-xl p-3 mb-6 text-sm flex items-center gap-2">
+        <div className="bg-red-50 text-danger border border-red-100 rounded-xl p-2.5 mb-4 text-[13px] flex items-center gap-2">
           <div className="w-1.5 h-1.5 bg-danger rounded-full flex-shrink-0" />
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-6">
-        <div className="bg-card rounded-2xl border border-border/50 p-6 space-y-5 shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form onSubmit={handleSave} className="space-y-4">
+        <div className="bg-card rounded-2xl border border-border/40 p-4 space-y-4 shadow-sm">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium mb-1 text-muted">Submission Date</label>
-              <div className="px-4 py-2.5 bg-gray-50 border border-border rounded-lg text-sm">
+              <label className="block text-[11px] font-medium mb-1 text-muted uppercase tracking-wide">Submission Date</label>
+              <div className="px-3 py-2 bg-gray-50 border border-border/60 rounded-lg text-[13px]">
                 {format(parseDate(submission.submission_date), "dd MMM yyyy")}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-muted">Name</label>
-              <div className="px-4 py-2.5 bg-gray-50 border border-border rounded-lg text-sm">
+              <label className="block text-[11px] font-medium mb-1 text-muted uppercase tracking-wide">Name</label>
+              <div className="px-3 py-2 bg-gray-50 border border-border/60 rounded-lg text-[13px]">
                 {submission.user_name}
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Completion Date <span className="text-danger">*</span>
             </label>
             <input
@@ -176,12 +176,12 @@ export default function EditSubmissionPage() {
               value={completionDate}
               onChange={(e) => setCompletionDate(e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Application Number <span className="text-danger">*</span>
             </label>
             <input
@@ -189,19 +189,19 @@ export default function EditSubmissionPage() {
               value={applicationNumber}
               onChange={(e) => setApplicationNumber(e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Cable Return</label>
-            <div className="flex items-center gap-4">
+            <label className="block text-[13px] font-medium mb-1.5">Cable Return</label>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setCableReturn(false)}
-                className={`px-6 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
                   !cableReturn
-                    ? "bg-red-50 border-danger text-danger"
+                    ? "bg-red-50 border-rose-300 text-rose-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
               >
@@ -210,9 +210,9 @@ export default function EditSubmissionPage() {
               <button
                 type="button"
                 onClick={() => setCableReturn(true)}
-                className={`px-6 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
                   cableReturn
-                    ? "bg-green-50 border-success text-green-700"
+                    ? "bg-emerald-50 border-emerald-300 text-emerald-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
               >
@@ -223,23 +223,23 @@ export default function EditSubmissionPage() {
 
           {cableReturn && (
             <div>
-              <label className="block text-sm font-medium mb-1">Cable Return Date</label>
+              <label className="block text-[13px] font-medium mb-1">Cable Return Date</label>
               <input
                 type="date"
                 value={cableReturnDate}
                 onChange={(e) => setCableReturnDate(e.target.value)}
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1">Remark</label>
+            <label className="block text-[13px] font-medium mb-1">Remark</label>
             <textarea
               value={remark}
               onChange={(e) => setRemark(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+              rows={3}
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary resize-none"
               placeholder="Any additional remarks..."
             />
           </div>
@@ -248,9 +248,9 @@ export default function EditSubmissionPage() {
         <button
           type="submit"
           disabled={saving}
-          className="w-full gradient-bg text-white shadow-lg shadow-primary/25 py-3 rounded-xl font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full gradient-bg text-white shadow-md shadow-primary/20 py-2.5 rounded-xl text-[13px] font-semibold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          <Save className="w-4 h-4" />
+          <Save className="w-3.5 h-3.5" />
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </form>

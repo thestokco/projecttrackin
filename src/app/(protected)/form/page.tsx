@@ -182,60 +182,60 @@ export default function FormPage() {
 
   return (
     <PullToRefresh onRefresh={loadUser}>
-    <div className="max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center shadow-md shadow-primary/20">
-          <Send className="w-5 h-5 text-white" />
+    <div className="max-w-lg mx-auto">
+      <div className="flex items-center gap-2.5 mb-4">
+        <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center shadow-sm shadow-primary/20">
+          <Send className="w-4 h-4 text-white" />
         </div>
-        <h1 className="text-2xl font-bold">New Submission</h1>
+        <h1 className="text-lg font-bold">New Submission</h1>
       </div>
 
       {success && (
-        <div className="bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 mb-6 flex items-center gap-3 animate-slide-up">
-          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl p-3 mb-4 flex items-center gap-2 text-[13px] animate-slide-up">
+          <CheckCircle className="w-4 h-4 flex-shrink-0" />
           Submission recorded successfully!
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 text-danger border border-red-200 rounded-xl p-3 mb-6 text-sm flex items-center gap-2">
+        <div className="bg-red-50 text-danger border border-red-100 rounded-xl p-2.5 mb-4 text-[13px] flex items-center gap-2">
           <div className="w-1.5 h-1.5 bg-danger rounded-full flex-shrink-0" />
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-card rounded-2xl border border-border/50 p-6 space-y-5 shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-card rounded-2xl border border-border/40 p-4 space-y-4 shadow-sm">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium mb-1 text-muted">
-                Date (auto)
+              <label className="block text-[11px] font-medium mb-1 text-muted uppercase tracking-wide">
+                Date
               </label>
-              <div className="px-4 py-2.5 bg-gray-50 border border-border rounded-lg text-sm">
+              <div className="px-3 py-2 bg-gray-50 border border-border/60 rounded-lg text-[13px]">
                 {currentDate}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-muted">
-                Time (auto)
+              <label className="block text-[11px] font-medium mb-1 text-muted uppercase tracking-wide">
+                Time
               </label>
-              <div className="px-4 py-2.5 bg-gray-50 border border-border rounded-lg text-sm">
+              <div className="px-3 py-2 bg-gray-50 border border-border/60 rounded-lg text-[13px]">
                 {currentTime}
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 text-muted">
-              Name (auto)
+            <label className="block text-[11px] font-medium mb-1 text-muted uppercase tracking-wide">
+              Name
             </label>
-            <div className="px-4 py-2.5 bg-gray-50 border border-border rounded-lg text-sm">
+            <div className="px-3 py-2 bg-gray-50 border border-border/60 rounded-lg text-[13px]">
               {userName || "Loading..."}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Completion Date <span className="text-danger">*</span>
             </label>
             <input
@@ -243,12 +243,12 @@ export default function FormPage() {
               value={completionDate}
               onChange={(e) => setCompletionDate(e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Application Number <span className="text-danger">*</span>
             </label>
             <input
@@ -256,22 +256,22 @@ export default function FormPage() {
               value={applicationNumber}
               onChange={(e) => setApplicationNumber(e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               placeholder="Enter application number"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-[13px] font-medium mb-1.5">
               Cable Return
             </label>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setCableReturn(false)}
-                className={`px-6 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
                   !cableReturn
-                    ? "bg-red-50 border-danger text-danger"
+                    ? "bg-red-50 border-rose-300 text-rose-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
               >
@@ -280,9 +280,9 @@ export default function FormPage() {
               <button
                 type="button"
                 onClick={() => setCableReturn(true)}
-                className={`px-6 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
                   cableReturn
-                    ? "bg-green-50 border-success text-green-700"
+                    ? "bg-emerald-50 border-emerald-300 text-emerald-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
               >
@@ -293,25 +293,25 @@ export default function FormPage() {
 
           {cableReturn && (
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-[13px] font-medium mb-1">
                 Cable Return Date
               </label>
               <input
                 type="date"
                 value={cableReturnDate}
                 onChange={(e) => setCableReturnDate(e.target.value)}
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Photo Submission (max 5)
+            <label className="block text-[13px] font-medium mb-1.5">
+              Photos <span className="text-muted font-normal">(max 5)</span>
             </label>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               {photoPreviews.map((src, i) => (
-                <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
+                <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
                   <img
                     src={src}
                     alt={`Photo ${i + 1}`}
@@ -322,14 +322,14 @@ export default function FormPage() {
                     onClick={() => removePhoto(i)}
                     className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-2.5 h-2.5" />
                   </button>
                 </div>
               ))}
               {photos.length < 5 && (
-                <label className="w-20 h-20 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors">
-                  <ImagePlus className="w-5 h-5 text-muted" />
-                  <span className="text-[10px] text-muted mt-1">Add</span>
+                <label className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                  <ImagePlus className="w-4 h-4 text-muted" />
+                  <span className="text-[9px] text-muted mt-0.5">Add</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -343,14 +343,14 @@ export default function FormPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Remark
             </label>
             <textarea
               value={remark}
               onChange={(e) => setRemark(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+              rows={3}
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary resize-none"
               placeholder="Any additional remarks..."
             />
           </div>
@@ -359,9 +359,9 @@ export default function FormPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full gradient-bg text-white shadow-lg shadow-primary/25 py-3 rounded-xl font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full gradient-bg text-white shadow-md shadow-primary/20 py-2.5 rounded-xl text-[13px] font-semibold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          <Send className="w-4 h-4" />
+          <Send className="w-3.5 h-3.5" />
           {loading ? "Submitting..." : "Submit"}
         </button>
       </form>

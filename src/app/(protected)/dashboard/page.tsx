@@ -6,7 +6,7 @@ import { mockStore } from "@/lib/mock-store";
 import type { Submission, Profile } from "@/lib/types";
 import { parseDate } from "@/lib/date";
 import { format, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from "date-fns";
-import { Users, Cable, Calendar } from "lucide-react";
+import { Users, Cable, Calendar, TrendingUp } from "lucide-react";
 import PullToRefresh from "@/components/PullToRefresh";
 
 export default function DashboardPage() {
@@ -90,14 +90,14 @@ export default function DashboardPage() {
   return (
     <PullToRefresh onRefresh={fetchData}>
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-muted" />
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h1 className="text-lg font-bold">Dashboard</h1>
+        <div className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5 text-muted" />
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="px-3 py-1.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="px-2.5 py-1.5 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 bg-card"
           >
             {months.map((m) => (
               <option key={format(m, "yyyy-MM")} value={format(m, "yyyy-MM")}>
@@ -109,61 +109,58 @@ export default function DashboardPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-20 text-muted">Loading...</div>
+        <div className="text-center py-16 text-[13px] text-muted">Loading...</div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-3 gap-3 mb-5">
             <StatCard
-              icon={<Users className="w-5 h-5" />}
-              label="Total Submissions"
+              icon={<TrendingUp className="w-4 h-4" />}
+              label="Submissions"
               value={submissions.length}
-              color="from-indigo-500 to-purple-500"
+              color="from-indigo-500 to-violet-500"
             />
             <StatCard
-              icon={<Users className="w-5 h-5" />}
-              label="Team Members"
+              icon={<Users className="w-4 h-4" />}
+              label="Members"
               value={profiles.length}
               color="from-emerald-500 to-teal-500"
             />
             <StatCard
-              icon={<Cable className="w-5 h-5" />}
-              label="Pending Cable Return"
+              icon={<Cable className="w-4 h-4" />}
+              label="Pending"
               value={pendingCableReturn.length}
               color="from-rose-500 to-pink-500"
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Cable className="w-5 h-5 text-red-500" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-card rounded-2xl border border-border/40 p-4 shadow-sm">
+              <h2 className="text-[14px] font-semibold mb-3 flex items-center gap-1.5">
+                <Cable className="w-4 h-4 text-rose-500" />
                 Pending Cable Returns
               </h2>
               {pendingCableReturn.length === 0 ? (
-                <p className="text-sm text-muted py-4">
-                  All cables have been returned for this month.
+                <p className="text-[13px] text-muted py-3">
+                  All cables returned for this month.
                 </p>
               ) : (
-                <div className="space-y-2 max-h-80 overflow-y-auto">
+                <div className="space-y-2 max-h-64 overflow-y-auto">
                   {pendingCableReturn.map((s) => (
                     <div
                       key={s.id}
-                      className="flex items-center justify-between px-4 py-3 bg-red-50 rounded-lg"
+                      className="flex items-center justify-between px-3 py-2.5 bg-rose-50 rounded-xl"
                     >
                       <div>
-                        <p className="text-sm font-medium">
+                        <p className="text-[13px] font-medium">
                           {s.application_number}
                         </p>
-                        <p className="text-xs text-muted">
-                          By {s.user_name} on{" "}
-                          {format(
-                            parseDate(s.submission_date),
-                            "dd MMM yyyy"
-                          )}
+                        <p className="text-[11px] text-muted">
+                          {s.user_name} &middot;{" "}
+                          {format(parseDate(s.submission_date), "dd MMM yyyy")}
                         </p>
                       </div>
-                      <span className="text-xs font-medium text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                        Not returned
+                      <span className="text-[10px] font-medium text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full">
+                        Pending
                       </span>
                     </div>
                   ))}
@@ -171,16 +168,16 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm lg:col-span-2">
-              <h2 className="text-lg font-semibold mb-4">
+            <div className="bg-card rounded-2xl border border-border/40 p-4 shadow-sm lg:col-span-2">
+              <h2 className="text-[14px] font-semibold mb-3">
                 Submissions by Member
               </h2>
               {Object.keys(submissionsByUser).length === 0 ? (
-                <p className="text-sm text-muted py-4">
+                <p className="text-[13px] text-muted py-3">
                   No submissions for this month.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {Object.entries(submissionsByUser)
                     .sort((a, b) => b[1] - a[1])
                     .map(([name, count]) => {
@@ -190,15 +187,15 @@ export default function DashboardPage() {
                       const pct = (count / max) * 100;
                       return (
                         <div key={name} className="space-y-1">
-                          <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center justify-between text-[13px]">
                             <span className="font-medium">{name}</span>
-                            <span className="text-muted">
+                            <span className="text-muted text-[12px]">
                               {count} submission{count !== 1 ? "s" : ""}
                             </span>
                           </div>
-                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-primary rounded-full transition-all"
+                              className="h-full gradient-bg rounded-full transition-all"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -228,15 +225,13 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className={`rounded-2xl p-5 bg-gradient-to-br ${color} text-white shadow-lg card-hover`}>
-      <div className="flex items-center gap-3">
-        <div className="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+    <div className={`stat-card rounded-2xl p-3.5 bg-gradient-to-br ${color} text-white shadow-md card-hover`}>
+      <div className="flex flex-col gap-1">
+        <div className="w-8 h-8 bg-white/15 rounded-lg flex items-center justify-center">
           {icon}
         </div>
-        <div>
-          <p className="text-3xl font-bold">{value}</p>
-          <p className="text-xs text-white/80">{label}</p>
-        </div>
+        <p className="text-2xl font-bold mt-1">{value}</p>
+        <p className="text-[10px] text-white/70 font-medium">{label}</p>
       </div>
     </div>
   );

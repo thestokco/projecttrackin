@@ -265,20 +265,20 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="text-muted">Loading...</div>
+      <div className="flex items-center justify-center py-16">
+        <div className="text-[13px] text-muted">Loading...</div>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <Settings className="w-6 h-6 text-primary" />
-          <h1 className="text-2xl font-bold">Settings</h1>
+      <div className="max-w-lg mx-auto">
+        <div className="flex items-center gap-2 mb-4">
+          <Settings className="w-5 h-5 text-primary" />
+          <h1 className="text-lg font-bold">Settings</h1>
         </div>
-        <div className="bg-amber-50 text-amber-800 border border-amber-200 rounded-lg p-4 text-sm">
+        <div className="bg-amber-50 text-amber-800 border border-amber-100 rounded-xl p-3 text-[13px]">
           Your profile could not be loaded. Please log out and sign up again, or contact your admin.
         </div>
       </div>
@@ -287,159 +287,151 @@ export default function SettingsPage() {
 
   return (
     <PullToRefresh onRefresh={fetchSettings}>
-    <div className="max-w-3xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <Settings className="w-6 h-6 text-primary" />
-        <h1 className="text-2xl font-bold">Settings</h1>
+    <div className="max-w-lg mx-auto">
+      <div className="flex items-center gap-2 mb-4">
+        <Settings className="w-5 h-5 text-primary" />
+        <h1 className="text-lg font-bold">Settings</h1>
       </div>
 
-      <div className="space-y-6">
-        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <User className="w-5 h-5 text-primary" />
+      <div className="space-y-4">
+        <div className="bg-card rounded-2xl border border-border/40 p-4 shadow-sm">
+          <h2 className="text-[14px] font-semibold mb-3 flex items-center gap-1.5">
+            <User className="w-4 h-4 text-primary" />
             My Profile
           </h2>
 
           {profileSaved && (
-            <div className="bg-green-50 text-green-700 border border-green-200 rounded-lg p-3 mb-4 flex items-center gap-2 text-sm">
-              <CheckCircle className="w-4 h-4 flex-shrink-0" />
-              Profile updated successfully
+            <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl p-2.5 mb-3 flex items-center gap-2 text-[13px]">
+              <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
+              Profile updated
             </div>
           )}
 
           {profileError && (
-            <div className="bg-red-50 text-danger border border-red-200 rounded-lg p-3 mb-4 text-sm">
+            <div className="bg-red-50 text-danger border border-red-100 rounded-xl p-2.5 mb-3 text-[13px]">
               {profileError}
             </div>
           )}
 
-          <form onSubmit={handleSaveProfile} className="space-y-4">
+          <form onSubmit={handleSaveProfile} className="space-y-3">
             <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
+              <label className="block text-[13px] font-medium mb-1">Name</label>
               <input
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
+              <label className="block text-[13px] font-medium mb-1">Email</label>
               <input
                 type="email"
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Contact Number
-              </label>
+              <label className="block text-[13px] font-medium mb-1">Contact</label>
               <input
                 type="tel"
                 value={editContact}
                 onChange={(e) => setEditContact(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               />
             </div>
             <button
               type="submit"
               disabled={savingProfile}
-              className="flex items-center gap-2 px-5 py-2.5 gradient-bg text-white shadow-md shadow-primary/20 rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-4 py-2 gradient-bg text-white shadow-sm shadow-primary/20 rounded-lg text-[13px] font-medium hover:opacity-90 transition-all disabled:opacity-50"
             >
-              <Save className="w-4 h-4" />
+              <Save className="w-3.5 h-3.5" />
               {savingProfile ? "Saving..." : "Save Profile"}
             </button>
           </form>
         </div>
 
-        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Lock className="w-5 h-5 text-primary" />
+        <div className="bg-card rounded-2xl border border-border/40 p-4 shadow-sm">
+          <h2 className="text-[14px] font-semibold mb-3 flex items-center gap-1.5">
+            <Lock className="w-4 h-4 text-primary" />
             Change Password
           </h2>
 
           {passwordSaved && (
-            <div className="bg-green-50 text-green-700 border border-green-200 rounded-lg p-3 mb-4 flex items-center gap-2 text-sm">
-              <CheckCircle className="w-4 h-4 flex-shrink-0" />
-              Password changed successfully
+            <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl p-2.5 mb-3 flex items-center gap-2 text-[13px]">
+              <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
+              Password changed
             </div>
           )}
 
           {passwordError && (
-            <div className="bg-red-50 text-danger border border-red-200 rounded-lg p-3 mb-4 text-sm">
+            <div className="bg-red-50 text-danger border border-red-100 rounded-xl p-2.5 mb-3 text-[13px]">
               {passwordError}
             </div>
           )}
 
-          <form onSubmit={handleChangePassword} className="space-y-4">
+          <form onSubmit={handleChangePassword} className="space-y-3">
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Current Password
-              </label>
+              <label className="block text-[13px] font-medium mb-1">Current Password</label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
                 placeholder="Enter current password"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
-                New Password
-              </label>
+              <label className="block text-[13px] font-medium mb-1">New Password</label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
                 placeholder="Min 6 characters"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Confirm New Password
-              </label>
+              <label className="block text-[13px] font-medium mb-1">Confirm New Password</label>
               <input
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
                 placeholder="Confirm new password"
               />
             </div>
             <button
               type="submit"
               disabled={savingPassword}
-              className="flex items-center gap-2 px-5 py-2.5 gradient-bg text-white shadow-md shadow-primary/20 rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-4 py-2 gradient-bg text-white shadow-sm shadow-primary/20 rounded-lg text-[13px] font-medium hover:opacity-90 transition-all disabled:opacity-50"
             >
-              <Lock className="w-4 h-4" />
+              <Lock className="w-3.5 h-3.5" />
               {savingPassword ? "Changing..." : "Change Password"}
             </button>
           </form>
         </div>
 
         {settings && (
-          <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary" />
+          <div className="bg-card rounded-2xl border border-border/40 p-4 shadow-sm">
+            <h2 className="text-[14px] font-semibold mb-1 flex items-center gap-1.5">
+              <Shield className="w-4 h-4 text-primary" />
               Invitation Codes
             </h2>
-            <p className="text-sm text-muted mb-5">
+            <p className="text-[12px] text-muted mb-4">
               {isAdmin
-                ? "Share these codes with people who need to sign up. Admin code gives full access, member code gives limited access."
-                : "Share this code to invite new team members."}
+                ? "Share these codes to let people sign up."
+                : "Share this code to invite new members."}
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {isAdmin && settings.admin_code && (
                 <CodeField
                   label="Admin Code"
@@ -456,7 +448,7 @@ export default function SettingsPage() {
               )}
 
               <CodeField
-                label="Team Member Code"
+                label="Member Code"
                 code={settings.member_code}
                 show={showMemberCode}
                 onToggleShow={() => setShowMemberCode(!showMemberCode)}
@@ -472,52 +464,52 @@ export default function SettingsPage() {
         )}
 
         {isAdmin && (
-          <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary" />
+          <div className="bg-card rounded-2xl border border-border/40 p-4 shadow-sm">
+            <h2 className="text-[14px] font-semibold mb-3 flex items-center gap-1.5">
+              <Users className="w-4 h-4 text-primary" />
               Team Members ({members.length})
             </h2>
 
             {removeError && (
-              <div className="bg-red-50 text-danger border border-red-200 rounded-lg p-3 mb-4 text-sm">
+              <div className="bg-red-50 text-danger border border-red-100 rounded-xl p-2.5 mb-3 text-[13px]">
                 {removeError}
               </div>
             )}
 
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border/40">
               {members.map((m) => (
                 <div
                   key={m.id}
-                  className="flex items-center justify-between py-3"
+                  className="flex items-center justify-between py-2.5"
                 >
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{m.name}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[13px] font-medium">{m.name}</span>
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold uppercase ${
                           m.role === "admin"
                             ? "bg-primary/10 text-primary"
-                            : "bg-gray-100 text-gray-600"
+                            : "bg-gray-100 text-gray-500"
                         }`}
                       >
                         {m.role}
                       </span>
                     </div>
-                    <div className="text-xs text-muted mt-0.5">
-                      {m.email} · {m.contact_no}
+                    <div className="text-[11px] text-muted mt-0.5">
+                      {m.email}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted">
-                      Joined {format(new Date(m.created_at), "dd MMM yyyy")}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-muted hidden sm:block">
+                      {format(new Date(m.created_at), "dd MMM yy")}
                     </span>
                     {m.id !== profile?.id && (
                       <button
                         onClick={() => setRemoveId(m.id)}
-                        className="p-1.5 rounded-lg text-muted hover:text-danger hover:bg-red-50 transition-colors"
+                        className="p-1 rounded-lg text-muted hover:text-danger hover:bg-red-50 transition-colors"
                         title="Remove member"
                       >
-                        <UserX className="w-4 h-4" />
+                        <UserX className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
@@ -529,23 +521,22 @@ export default function SettingsPage() {
       </div>
 
       {removeId && (
-        <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-2">Remove Member</h3>
-            <p className="text-sm text-muted mb-6">
-              Are you sure you want to remove this team member? They will no
-              longer be able to access the app.
+        <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-5 max-w-xs w-full animate-slide-up">
+            <h3 className="text-[15px] font-semibold mb-1.5">Remove Member</h3>
+            <p className="text-[13px] text-muted mb-5">
+              Are you sure? They will no longer be able to access the app.
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => handleRemoveMember(removeId)}
-                className="flex-1 bg-danger text-white py-2 rounded-lg font-medium hover:bg-red-600 transition-colors"
+                className="flex-1 bg-danger text-white py-2 rounded-xl text-[13px] font-medium hover:bg-red-600 transition-colors"
               >
                 Remove
               </button>
               <button
                 onClick={() => setRemoveId(null)}
-                className="flex-1 border border-border py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                className="flex-1 border border-border py-2 rounded-xl text-[13px] font-medium hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
@@ -583,48 +574,48 @@ function CodeField({
 }) {
   return (
     <div
-      className={`rounded-lg border p-4 ${
+      className={`rounded-xl border p-3 ${
         variant === "admin"
-          ? "border-primary/30 bg-primary/5"
-          : "border-border bg-gray-50"
+          ? "border-primary/20 bg-primary/5"
+          : "border-border/60 bg-gray-50"
       }`}
     >
-      <label className="block text-sm font-medium mb-2">{label}</label>
-      <div className="flex items-center gap-2">
-        <div className="flex-1 px-4 py-2.5 bg-white border border-border rounded-lg font-mono text-sm tracking-wider select-all">
+      <label className="block text-[13px] font-medium mb-1.5">{label}</label>
+      <div className="flex items-center gap-1.5">
+        <div className="flex-1 px-3 py-2 bg-white border border-border/60 rounded-lg font-mono text-[13px] tracking-wider select-all">
           {show ? code : "••••••••"}
         </div>
         <button
           onClick={onToggleShow}
-          className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg border border-border/60 hover:bg-gray-100 transition-colors"
           title={show ? "Hide" : "Show"}
         >
           {show ? (
-            <EyeOff className="w-4 h-4" />
+            <EyeOff className="w-3.5 h-3.5" />
           ) : (
-            <Eye className="w-4 h-4" />
+            <Eye className="w-3.5 h-3.5" />
           )}
         </button>
         <button
           onClick={onCopy}
-          className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg border border-border/60 hover:bg-gray-100 transition-colors"
           title="Copy"
         >
           {copied ? (
-            <Check className="w-4 h-4 text-green-600" />
+            <Check className="w-3.5 h-3.5 text-emerald-600" />
           ) : (
-            <Copy className="w-4 h-4" />
+            <Copy className="w-3.5 h-3.5" />
           )}
         </button>
         {canRegenerate && (
           <button
             onClick={onRegenerate}
             disabled={regenerating}
-            className="p-2.5 rounded-lg border border-border hover:bg-gray-100 transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg border border-border/60 hover:bg-gray-100 transition-colors disabled:opacity-50"
             title="Generate new code"
           >
             <RefreshCw
-              className={`w-4 h-4 ${regenerating ? "animate-spin" : ""}`}
+              className={`w-3.5 h-3.5 ${regenerating ? "animate-spin" : ""}`}
             />
           </button>
         )}
