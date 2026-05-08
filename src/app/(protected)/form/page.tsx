@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import { format } from "date-fns";
 import { Send, ImagePlus, X, CheckCircle } from "lucide-react";
+import PullToRefresh from "@/components/PullToRefresh";
 
 export default function FormPage() {
   const isDemo = mockStore.isDemoMode();
@@ -21,7 +22,7 @@ export default function FormPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const loadUser = useCallback(async () => {
     if (isDemo) {
       const user = mockStore.getUser();
       setUserName(user.name);
@@ -30,25 +31,26 @@ export default function FormPage() {
     }
 
     const supabase = createClient();
-    async function loadUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("name")
-        .eq("id", user.id)
-        .single();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", user.id)
+      .single();
 
-      if (profile) {
-        setUserName(profile.name);
-        setUserId(user.id);
-      }
+    if (profile) {
+      setUserName(profile.name);
+      setUserId(user.id);
     }
-    loadUser();
   }, [isDemo]);
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const MAX_BYTES = 5 * 1024 * 1024;
@@ -179,6 +181,7 @@ export default function FormPage() {
   const currentTime = format(now, "hh:mm a");
 
   return (
+    <PullToRefresh onRefresh={loadUser}>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">New Submission</h1>
 
@@ -357,5 +360,6 @@ export default function FormPage() {
         </button>
       </form>
     </div>
+    </PullToRefresh>
   );
 }

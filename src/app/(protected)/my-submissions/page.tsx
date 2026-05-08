@@ -9,6 +9,7 @@ import { parseDate } from "@/lib/date";
 import { format } from "date-fns";
 import { Pencil, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
+import PullToRefresh from "@/components/PullToRefresh";
 
 export default function MySubmissionsPage() {
   const router = useRouter();
@@ -83,6 +84,7 @@ export default function MySubmissionsPage() {
   }
 
   return (
+    <PullToRefresh onRefresh={fetchData}>
     <div>
       <h1 className="text-2xl font-bold mb-6">My Submissions</h1>
 
@@ -184,5 +186,6 @@ export default function MySubmissionsPage() {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 }

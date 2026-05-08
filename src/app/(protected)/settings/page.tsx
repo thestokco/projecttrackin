@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import { useUser } from "@/lib/user-context";
@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Lock,
 } from "lucide-react";
+import PullToRefresh from "@/components/PullToRefresh";
 
 function generateCode(length = 8) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -59,7 +60,7 @@ export default function SettingsPage() {
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
-  useEffect(() => {
+  const fetchSettings = useCallback(async () => {
     if (!profile) {
       setLoading(false);
       return;
@@ -77,36 +78,37 @@ export default function SettingsPage() {
     }
 
     const supabase = createClient();
-    async function fetchData() {
-      if (isAdmin) {
-        const settingsRes = await supabase
-          .from("team_settings")
-          .select("*")
-          .single();
-        if (settingsRes.data) setSettings(settingsRes.data);
+    if (isAdmin) {
+      const settingsRes = await supabase
+        .from("team_settings")
+        .select("*")
+        .single();
+      if (settingsRes.data) setSettings(settingsRes.data);
 
-        const membersRes = await supabase
-          .from("profiles")
-          .select("*")
-          .order("created_at");
-        if (membersRes.data) setMembers(membersRes.data);
-      } else {
-        const { data: memberCode } = await supabase.rpc(
-          "get_member_invite_code"
-        );
-        if (memberCode) {
-          setSettings({
-            id: "",
-            admin_code: "",
-            member_code: memberCode,
-            created_at: "",
-          });
-        }
+      const membersRes = await supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at");
+      if (membersRes.data) setMembers(membersRes.data);
+    } else {
+      const { data: memberCode } = await supabase.rpc(
+        "get_member_invite_code"
+      );
+      if (memberCode) {
+        setSettings({
+          id: "",
+          admin_code: "",
+          member_code: memberCode,
+          created_at: "",
+        });
       }
-      setLoading(false);
     }
-    fetchData();
+    setLoading(false);
   }, [profile, isAdmin, isDemo]);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   async function handleCopy(text: string, field: string) {
     await navigator.clipboard.writeText(text);
@@ -279,6 +281,7 @@ export default function SettingsPage() {
   }
 
   return (
+    <PullToRefresh onRefresh={fetchSettings}>
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Settings className="w-6 h-6 text-primary" />
@@ -540,6 +543,7 @@ export default function SettingsPage() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }
 

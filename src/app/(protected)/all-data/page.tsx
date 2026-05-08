@@ -18,6 +18,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import PullToRefresh from "@/components/PullToRefresh";
 import * as XLSX from "xlsx";
 
 type SortKey = keyof Pick<
@@ -197,6 +198,7 @@ export default function AllDataPage() {
   }
 
   return (
+    <PullToRefresh onRefresh={fetchData}>
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">All Data</h1>
@@ -350,5 +352,6 @@ export default function AllDataPage() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }

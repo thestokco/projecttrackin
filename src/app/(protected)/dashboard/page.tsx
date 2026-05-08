@@ -7,6 +7,7 @@ import type { Submission, Profile } from "@/lib/types";
 import { parseDate } from "@/lib/date";
 import { format, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from "date-fns";
 import { Users, AlertTriangle, Cable, Calendar } from "lucide-react";
+import PullToRefresh from "@/components/PullToRefresh";
 
 export default function DashboardPage() {
   const isDemo = mockStore.isDemoMode();
@@ -90,6 +91,7 @@ export default function DashboardPage() {
   });
 
   return (
+    <PullToRefresh onRefresh={fetchData}>
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
@@ -248,6 +250,7 @@ export default function DashboardPage() {
         </>
       )}
     </div>
+    </PullToRefresh>
   );
 }
 
