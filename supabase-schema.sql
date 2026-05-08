@@ -39,7 +39,7 @@ CREATE TABLE team_settings (
 
 -- Insert default codes (change these after first login!)
 INSERT INTO team_settings (admin_code, member_code)
-VALUES ('ADMIN2026', 'TEAM2026');
+VALUES ('STOKADMIN', 'STOKTEAM');
 
 -- 4. Enable Row Level Security
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
