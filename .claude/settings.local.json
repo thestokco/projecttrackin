@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm install @supabase/supabase-js @supabase/ssr xlsx date-fns lucide-react 2>&1)",
+      "PowerShell($minPng = [Convert]::FromBase64String\\(\"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\"\\); [System.IO.File]::WriteAllBytes\\(\"C:\\\\Users\\\\offic\\\\OneDrive\\\\Desktop\\\\Projecttrackin\\\\public\\\\icons\\\\icon-192.png\", $minPng\\); [System.IO.File]::WriteAllBytes\\(\"C:\\\\Users\\\\offic\\\\OneDrive\\\\Desktop\\\\Projecttrackin\\\\public\\\\icons\\\\icon-512.png\", $minPng\\); Write-Output \"Done\")"
+    ]
+  }
+}
