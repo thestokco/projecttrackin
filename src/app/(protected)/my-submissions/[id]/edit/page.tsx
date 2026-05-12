@@ -27,6 +27,7 @@ export default function EditSubmissionPage() {
   const [applicationNumber, setApplicationNumber] = useState("");
   const [cableReturn, setCableReturn] = useState(false);
   const [cableReturnDate, setCableReturnDate] = useState("");
+  const [location, setLocation] = useState("");
   const [remark, setRemark] = useState("");
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function EditSubmissionPage() {
       setApplicationNumber(data.application_number);
       setCableReturn(data.cable_return);
       setCableReturnDate(data.cable_return_date || "");
+      setLocation(data.location || "");
       setRemark(data.remark || "");
     }
 
@@ -87,6 +89,7 @@ export default function EditSubmissionPage() {
         application_number: applicationNumber,
         cable_return: cableReturn,
         cable_return_date: cableReturn ? cableReturnDate || null : null,
+        location: location || null,
         remark: remark || null,
       };
 
@@ -232,6 +235,17 @@ export default function EditSubmissionPage() {
               />
             </div>
           )}
+
+          <div>
+            <label className="block text-[13px] font-medium mb-1">Location</label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
+              placeholder="Enter location"
+            />
+          </div>
 
           <div>
             <label className="block text-[13px] font-medium mb-1">Remark</label>

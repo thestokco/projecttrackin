@@ -27,6 +27,7 @@ export interface Submission {
   cable_return: boolean;
   cable_return_date: string | null;
   photos: string[];
+  location: string | null;
   remark: string | null;
   created_at: string;
 }

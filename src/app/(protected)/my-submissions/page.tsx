@@ -106,6 +106,9 @@ export default function MySubmissionsPage() {
                   Cable
                 </th>
                 <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
+                  Location
+                </th>
+                <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
                   Photos
                 </th>
                 <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
@@ -116,13 +119,13 @@ export default function MySubmissionsPage() {
             <tbody className="divide-y divide-border/40">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-3 py-10 text-center text-[13px] text-muted">
+                  <td colSpan={7} className="px-3 py-10 text-center text-[13px] text-muted">
                     Loading...
                   </td>
                 </tr>
               ) : submissions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-3 py-10 text-center text-[13px] text-muted">
+                  <td colSpan={7} className="px-3 py-10 text-center text-[13px] text-muted">
                     No submissions yet
                   </td>
                 </tr>
@@ -153,6 +156,7 @@ export default function MySubmissionsPage() {
                         {s.cable_return ? "Yes" : "No"}
                       </span>
                     </td>
+                    <td className="px-3 py-2.5 text-[13px]">{s.location || "-"}</td>
                     <td className="px-3 py-2.5">
                       {s.photos && s.photos.length > 0 ? (
                         <button

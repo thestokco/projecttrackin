@@ -17,6 +17,7 @@ export default function FormPage() {
   const [cableReturnDate, setCableReturnDate] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [location, setLocation] = useState("");
   const [remark, setRemark] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -113,6 +114,7 @@ export default function FormPage() {
           application_number: applicationNumber,
           cable_return: cableReturn,
           cable_return_date: cableReturn ? cableReturnDate || null : null,
+          location: location || null,
           photos: photoPreviews,
           remark: remark || null,
         });
@@ -150,6 +152,7 @@ export default function FormPage() {
             application_number: applicationNumber,
             cable_return: cableReturn,
             cable_return_date: cableReturn ? cableReturnDate || null : null,
+            location: location || null,
             photos: photoUrls,
             remark: remark || null,
           });
@@ -162,6 +165,7 @@ export default function FormPage() {
       setApplicationNumber("");
       setCableReturn(false);
       setCableReturnDate("");
+      setLocation("");
       setPhotos([]);
       setPhotoPreviews([]);
       setRemark("");
@@ -258,6 +262,19 @@ export default function FormPage() {
               required
               className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               placeholder="Enter application number"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium mb-1">
+              Location
+            </label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
+              placeholder="Enter location"
             />
           </div>
 

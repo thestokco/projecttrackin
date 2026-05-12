@@ -6,7 +6,7 @@ import { mockStore } from "@/lib/mock-store";
 import type { Submission } from "@/lib/types";
 import { parseDate } from "@/lib/date";
 import { format } from "date-fns";
-import { ArrowLeft, Download, Calendar, Clock, User, Hash, Cable } from "lucide-react";
+import { ArrowLeft, Download, Calendar, Clock, User, Hash, Cable, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -119,6 +119,16 @@ export default function DetailPage() {
             />
           )}
         </div>
+
+        {submission.location && (
+          <div>
+            <label className="flex items-center gap-1 text-[11px] font-medium text-muted mb-0.5 uppercase tracking-wide">
+              <MapPin className="w-3.5 h-3.5" />
+              Location
+            </label>
+            <div className="text-[13px] font-medium">{submission.location}</div>
+          </div>
+        )}
 
         {submission.remark && (
           <div>

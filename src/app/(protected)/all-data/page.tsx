@@ -28,6 +28,7 @@ type SortKey = keyof Pick<
   | "cable_return"
   | "cable_return_date"
   | "submission_date"
+  | "location"
 >;
 
 export default function AllDataPage() {
@@ -154,6 +155,7 @@ export default function AllDataPage() {
       "Application Number": s.application_number,
       "Cable Return": s.cable_return ? "Yes" : "No",
       "Cable Return Date": s.cable_return_date || "-",
+      Location: s.location || "-",
       "Photo Count": s.photos?.length || 0,
       Remark: s.remark || "-",
     }));
@@ -168,7 +170,8 @@ export default function AllDataPage() {
     ? submissions.filter(
         (s) =>
           s.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          s.application_number.toLowerCase().includes(searchQuery.toLowerCase())
+          s.application_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (s.location && s.location.toLowerCase().includes(searchQuery.toLowerCase()))
       )
     : submissions;
 
@@ -178,7 +181,7 @@ export default function AllDataPage() {
     page * perPage
   );
 
-  const colSpan = isAdmin ? 7 : 6;
+  const colSpan = isAdmin ? 8 : 7;
 
   async function downloadPhotos(e: React.MouseEvent, photos: string[], appNumber: string) {
     e.stopPropagation();
@@ -274,6 +277,7 @@ export default function AllDataPage() {
                 <SortHeader label="App No." sortKeyName="application_number" />
                 <SortHeader label="Cable" sortKeyName="cable_return" />
                 <SortHeader label="Return Date" sortKeyName="cable_return_date" />
+                <SortHeader label="Location" sortKeyName="location" />
                 <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">Photos</th>
                 {isAdmin && (
                   <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">Action</th>
@@ -305,6 +309,7 @@ export default function AllDataPage() {
                     <td className="px-3 py-2.5 text-[13px]">
                       {s.cable_return_date ? format(parseDate(s.cable_return_date), "dd MMM yy") : "-"}
                     </td>
+                    <td className="px-3 py-2.5 text-[13px]">{s.location || "-"}</td>
                     <td className="px-3 py-2.5">
                       {s.photos && s.photos.length > 0 ? (
                         <button
