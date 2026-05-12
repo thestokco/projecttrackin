@@ -275,9 +275,9 @@ export default function AllDataPage() {
                 <SortHeader label="Name" sortKeyName="user_name" />
                 <SortHeader label="Completion" sortKeyName="completion_date" />
                 <SortHeader label="App No." sortKeyName="application_number" />
+                <SortHeader label="Location" sortKeyName="location" />
                 <SortHeader label="Cable" sortKeyName="cable_return" />
                 <SortHeader label="Return Date" sortKeyName="cable_return_date" />
-                <SortHeader label="Location" sortKeyName="location" />
                 <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">Photos</th>
                 {isAdmin && (
                   <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">Action</th>
@@ -301,6 +301,7 @@ export default function AllDataPage() {
                       {s.completion_date ? format(parseDate(s.completion_date), "dd MMM yy") : "-"}
                     </td>
                     <td className="px-3 py-2.5 text-[13px] font-mono">{s.application_number}</td>
+                    <td className="px-3 py-2.5 text-[13px]">{s.location || "-"}</td>
                     <td className="px-3 py-2.5">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${s.cable_return ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>
                         {s.cable_return ? "Yes" : "No"}
@@ -309,7 +310,6 @@ export default function AllDataPage() {
                     <td className="px-3 py-2.5 text-[13px]">
                       {s.cable_return_date ? format(parseDate(s.cable_return_date), "dd MMM yy") : "-"}
                     </td>
-                    <td className="px-3 py-2.5 text-[13px]">{s.location || "-"}</td>
                     <td className="px-3 py-2.5">
                       {s.photos && s.photos.length > 0 ? (
                         <button

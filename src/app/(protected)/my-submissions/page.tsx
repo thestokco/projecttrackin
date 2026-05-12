@@ -103,10 +103,10 @@ export default function MySubmissionsPage() {
                   App No.
                 </th>
                 <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
-                  Cable
+                  Location
                 </th>
                 <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
-                  Location
+                  Cable
                 </th>
                 <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-wider">
                   Photos
@@ -145,6 +145,7 @@ export default function MySubmissionsPage() {
                     <td className="px-3 py-2.5 text-[13px] font-mono">
                       {s.application_number}
                     </td>
+                    <td className="px-3 py-2.5 text-[13px]">{s.location || "-"}</td>
                     <td className="px-3 py-2.5">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
@@ -156,7 +157,6 @@ export default function MySubmissionsPage() {
                         {s.cable_return ? "Yes" : "No"}
                       </span>
                     </td>
-                    <td className="px-3 py-2.5 text-[13px]">{s.location || "-"}</td>
                     <td className="px-3 py-2.5">
                       {s.photos && s.photos.length > 0 ? (
                         <button
