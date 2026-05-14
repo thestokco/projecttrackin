@@ -321,7 +321,7 @@ export default function EditSubmissionPage() {
 
           <div>
             <label className="block text-[13px] font-medium mb-1.5">
-              Photos <span className="text-muted font-normal">(max 5)</span>
+              Photos <span className="text-muted font-normal">(max 5 photos)</span>
             </label>
             <div className="flex flex-wrap gap-2">
               {existingPhotos.map((url, i) => (
