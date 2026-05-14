@@ -7,7 +7,7 @@ import { useUser } from "@/lib/user-context";
 import type { Submission } from "@/lib/types";
 import { parseDate } from "@/lib/date";
 import { format } from "date-fns";
-import { ArrowLeft, Save, CheckCircle } from "lucide-react";
+import { ArrowLeft, Save, CheckCircle, ImagePlus, X } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 
@@ -29,6 +29,9 @@ export default function EditSubmissionPage() {
   const [cableReturnDate, setCableReturnDate] = useState("");
   const [location, setLocation] = useState("");
   const [remark, setRemark] = useState("");
+  const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
+  const [newPhotos, setNewPhotos] = useState<File[]>([]);
+  const [newPhotoPreviews, setNewPhotoPreviews] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +49,7 @@ export default function EditSubmissionPage() {
       setCableReturnDate(data.cable_return_date || "");
       setLocation(data.location || "");
       setRemark(data.remark || "");
+      setExistingPhotos(data.photos || []);
     }
 
     async function load() {
@@ -71,6 +75,53 @@ export default function EditSubmissionPage() {
     };
   }, [id, isDemo, profile]);
 
+  const totalPhotos = existingPhotos.length + newPhotos.length;
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const MAX_BYTES = 5 * 1024 * 1024;
+    const files = Array.from(e.target.files || []);
+    const remaining = 5 - totalPhotos;
+
+    const valid: File[] = [];
+    const rejected: string[] = [];
+    for (const f of files.slice(0, remaining)) {
+      if (!f.type.startsWith("image/")) {
+        rejected.push(`${f.name} (not an image)`);
+        continue;
+      }
+      if (f.size > MAX_BYTES) {
+        rejected.push(`${f.name} (over 5MB)`);
+        continue;
+      }
+      valid.push(f);
+    }
+
+    if (rejected.length) {
+      setError(`Skipped: ${rejected.join(", ")}`);
+    } else {
+      setError("");
+    }
+
+    setNewPhotos((prev) => [...prev, ...valid]);
+    valid.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewPhotoPreviews((prev) => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
+  }
+
+  function removeExistingPhoto(index: number) {
+    setExistingPhotos((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function removeNewPhoto(index: number) {
+    setNewPhotos((prev) => prev.filter((_, i) => i !== index));
+    setNewPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!submission || !profile) return;
@@ -84,6 +135,26 @@ export default function EditSubmissionPage() {
     setSaving(true);
 
     try {
+      let allPhotos = [...existingPhotos];
+
+      if (isDemo) {
+        allPhotos = [...allPhotos, ...newPhotoPreviews];
+      } else if (newPhotos.length > 0) {
+        const supabase = createClient();
+        for (const photo of newPhotos) {
+          const fileExt = photo.name.split(".").pop();
+          const fileName = `${profile.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage
+            .from("submission-photos")
+            .upload(fileName, photo);
+          if (uploadError) throw uploadError;
+          const { data: { publicUrl } } = supabase.storage
+            .from("submission-photos")
+            .getPublicUrl(fileName);
+          allPhotos.push(publicUrl);
+        }
+      }
+
       const updates = {
         completion_date: completionDate,
         application_number: applicationNumber,
@@ -91,6 +162,7 @@ export default function EditSubmissionPage() {
         cable_return_date: cableReturn ? cableReturnDate || null : null,
         location: location || null,
         remark: remark || null,
+        photos: allPhotos,
       };
 
       if (isDemo) {
@@ -245,6 +317,51 @@ export default function EditSubmissionPage() {
               className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               placeholder="Enter location"
             />
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium mb-1.5">
+              Photos <span className="text-muted font-normal">(max 5)</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {existingPhotos.map((url, i) => (
+                <div key={`existing-${i}`} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
+                  <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeExistingPhoto(i)}
+                    className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5"
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </div>
+              ))}
+              {newPhotoPreviews.map((src, i) => (
+                <div key={`new-${i}`} className="relative w-16 h-16 rounded-lg overflow-hidden border border-primary/40">
+                  <img src={src} alt={`New ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeNewPhoto(i)}
+                    className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5"
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </div>
+              ))}
+              {totalPhotos < 5 && (
+                <label className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                  <ImagePlus className="w-4 h-4 text-muted" />
+                  <span className="text-[9px] text-muted mt-0.5">Add</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    multiple
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
           </div>
 
           <div>
