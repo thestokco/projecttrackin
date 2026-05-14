@@ -54,7 +54,7 @@ export default function FormPage() {
   }, [loadUser]);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const MAX_BYTES = 5 * 1024 * 1024;
+    const MAX_BYTES = 15 * 1024 * 1024;
     const files = Array.from(e.target.files || []);
     const remaining = 5 - photos.length;
 
@@ -66,7 +66,7 @@ export default function FormPage() {
         continue;
       }
       if (f.size > MAX_BYTES) {
-        rejected.push(`${f.name} (over 5MB)`);
+        rejected.push(`${f.name} (over 15MB)`);
         continue;
       }
       valid.push(f);

@@ -78,7 +78,7 @@ export default function EditSubmissionPage() {
   const totalPhotos = existingPhotos.length + newPhotos.length;
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const MAX_BYTES = 5 * 1024 * 1024;
+    const MAX_BYTES = 15 * 1024 * 1024;
     const files = Array.from(e.target.files || []);
     const remaining = 5 - totalPhotos;
 
@@ -90,7 +90,7 @@ export default function EditSubmissionPage() {
         continue;
       }
       if (f.size > MAX_BYTES) {
-        rejected.push(`${f.name} (over 5MB)`);
+        rejected.push(`${f.name} (over 15MB)`);
         continue;
       }
       valid.push(f);
