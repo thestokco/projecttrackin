@@ -399,8 +399,9 @@ export default function FormPage() {
               Photos <span className="text-muted font-normal">(max 5 photos)</span>
             </label>
 
-            <label className={`flex items-center justify-center gap-2 w-full py-2.5 mb-3 rounded-xl text-[13px] font-semibold border-2 border-dashed transition-colors cursor-pointer ${scanning ? "border-primary/40 bg-primary/5 text-primary" : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted hover:text-primary"}`}>
-              <ScanLine className="w-4 h-4" />
+            <label className={`relative flex items-center justify-center gap-2 w-full py-2.5 mb-3 rounded-xl text-[13px] font-semibold border-2 border-dashed transition-colors cursor-pointer overflow-hidden ${scanning ? "border-blue-400 bg-blue-50 text-blue-600" : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted hover:text-primary"}`}>
+              {scanning && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/50 to-transparent animate-scan-sweep" />}
+              <ScanLine className={`w-4 h-4 ${scanning ? "animate-pulse" : ""}`} />
               {scanning ? "Scanning document..." : "Scan & Add Document"}
               <input
                 type="file"
