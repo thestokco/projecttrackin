@@ -23,7 +23,6 @@ export default function FormPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [scanning, setScanning] = useState(false);
-  const [scanText, setScanText] = useState("");
 
   const loadUser = useCallback(async () => {
     if (isDemo) {
@@ -111,16 +110,12 @@ export default function FormPage() {
       const { data: { text } } = await worker.recognize(file);
       await worker.terminate();
 
-      setScanText(text);
-
-      // Project No: extract number from "Project No./Cost Center : DJT/J1110198665" → 1110198665
-      const projectMatch = text.match(/Project\s*No\.?\s*[/\\]?\s*Cost\s*Center\s*[:\s]+\S*?(\d{7,})/i)
-        || text.match(/Cost\s*Center\s*[:\s]+\S*?(\d{7,})/i)
-        || text.match(/Project\s*No\.?\s*[:\s]+\S*?(\d{7,})/i)
-        || text.match(/DJT\S*?(\d{7,})/i)
-        || text.match(/[A-Z]{2,4}[/\\][A-Z](\d{7,})/i);
+      // Project No: OCR may read "DIT/11101 98665." — digits split by spaces
+      const projectMatch = text.match(/Project\s*No\.?\s*[/\\]?\s*Cost\s*Center\s*[:\s]+\S*?([\d\s]{7,})/i)
+        || text.match(/Cost\s*Center\s*[:\s]+\S*?([\d\s]{7,})/i)
+        || text.match(/D[IJJ]T\S*?([\d\s]{7,})/i);
       if (projectMatch) {
-        setApplicationNumber(projectMatch[1]);
+        setApplicationNumber(projectMatch[1].replace(/\s/g, "").replace(/\D+$/, ""));
       }
 
       // Job Location: "Job Location : 11 LYNWOOD GROVE"
@@ -131,9 +126,9 @@ export default function FormPage() {
         setLocation(loc);
       }
 
-      // Date: get from "Prepared By" section, not "Expiry Date"
-      const preparedDateMatch = text.match(/Prepared\s*By[\s\S]*?Date\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
-      const standaloneDateMatch = text.match(/(?<![Ee]xpiry\s)Date\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
+      // Date: get from "Prepared By" section — OCR may read "pate" instead of "Date"
+      const preparedDateMatch = text.match(/Prepared\s*By[\s\S]*?[dp]ate\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
+      const standaloneDateMatch = text.match(/(?<![Ee]xpiry\s)[dp]ate\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
       const anyDateMatch = text.match(/(\d{2}\.\d{2}\.\d{4})/);
       const dateMatch = preparedDateMatch || standaloneDateMatch || anyDateMatch;
       if (dateMatch) {
@@ -416,12 +411,6 @@ export default function FormPage() {
               />
             </label>
 
-            {scanText && (
-              <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-[10px] font-semibold text-yellow-700 mb-1">OCR Debug:</p>
-                <pre className="text-[10px] text-yellow-800 whitespace-pre-wrap break-words max-h-40 overflow-y-auto">{scanText}</pre>
-              </div>
-            )}
 
             <div className="flex flex-wrap gap-2">
               {photoPreviews.map((src, i) => (
