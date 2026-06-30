@@ -113,21 +113,28 @@ export default function FormPage() {
 
       setScanText(text);
 
-      const projectMatch = text.match(/Project\s*No[.\s/]*Cost\s*Center\s*[:\s]*\S*?(\d{6,})/i)
-        || text.match(/Project\s*No\.?\s*[:/]?\s*(\d{6,})/i)
-        || text.match(/(\d{6,})/);
+      // Project No: extract long number from "Project No./Cost Center : DJT/J1110198665"
+      const projectMatch = text.match(/Project\s*No\.?\s*[/\\]?\s*Cost\s*Center\s*[:\s]+\S*?(\d{7,})/i)
+        || text.match(/Cost\s*Center\s*[:\s]+\S*?(\d{7,})/i)
+        || text.match(/Project\s*No\.?\s*[:\s]+\S*?(\d{7,})/i)
+        || text.match(/Contract\s*No\.?\s*[:\s]+(\d{5,})/i);
       if (projectMatch) {
         setApplicationNumber(projectMatch[1]);
       }
 
-      const locationMatch = text.match(/Job\s*Location\s*[:\s]*(.+)/i)
-        || text.match(/Location\s*[:\s]*(.+)/i);
+      // Job Location: "Job Location : 11 LYNWOOD GROVE"
+      const locationMatch = text.match(/Job\s*Location\s*[:\s]+(.+)/i)
+        || text.match(/Location\s*[:\s]+(.+)/i);
       if (locationMatch) {
-        const loc = locationMatch[1].replace(/^\s*[:]\s*/, "").trim();
+        const loc = locationMatch[1].replace(/^\s*[:]\s*/, "").trim().split("\n")[0].trim();
         setLocation(loc);
       }
 
-      const dateMatch = text.match(/(\d{2}[./]\d{2}[./]\d{4})/);
+      // Date: get from "Prepared By" section, not "Expiry Date"
+      const preparedDateMatch = text.match(/Prepared\s*By[\s\S]*?Date\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
+      const standaloneDateMatch = text.match(/(?<![Ee]xpiry\s)Date\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
+      const anyDateMatch = text.match(/(\d{2}\.\d{2}\.\d{4})/);
+      const dateMatch = preparedDateMatch || standaloneDateMatch || anyDateMatch;
       if (dateMatch) {
         const parts = dateMatch[1].split(/[./]/);
         if (parts.length === 3) {
