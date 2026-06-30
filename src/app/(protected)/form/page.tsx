@@ -299,48 +299,8 @@ export default function FormPage() {
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium mb-1">
-              Completion Date <span className="text-danger">*</span>
-            </label>
-            <input
-              type="date"
-              value={completionDate}
-              onChange={(e) => setCompletionDate(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[13px] font-medium mb-1">
-              Application Number <span className="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              value={applicationNumber}
-              onChange={(e) => setApplicationNumber(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
-              placeholder="Enter application number"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[13px] font-medium mb-1">
-              Location
-            </label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
-              placeholder="Enter location"
-            />
-          </div>
-
-          <div>
             <label className="block text-[13px] font-medium mb-1.5">
-              Cable Return
+              Cable Return <span className="text-danger">*</span>
             </label>
             <div className="flex items-center gap-2">
               <button
@@ -392,6 +352,46 @@ export default function FormPage() {
               />
             </div>
           )}
+
+          <div>
+            <label className="block text-[13px] font-medium mb-1">
+              Completion Date <span className="text-danger">*</span>
+            </label>
+            <input
+              type="date"
+              value={completionDate}
+              onChange={(e) => setCompletionDate(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium mb-1">
+              Application Number <span className="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              value={applicationNumber}
+              onChange={(e) => setApplicationNumber(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
+              placeholder="Enter application number"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium mb-1">
+              Location
+            </label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
+              placeholder="Enter location"
+            />
+          </div>
 
           <div>
             <label className="block text-[13px] font-medium mb-1.5">
