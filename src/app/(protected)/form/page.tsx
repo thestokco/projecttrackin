@@ -103,20 +103,14 @@ export default function FormPage() {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const scale = Math.max(1, 2000 / Math.max(img.width, img.height));
+        const maxDim = Math.max(img.width, img.height);
+        const scale = maxDim < 1500 ? 1500 / maxDim : 1;
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
         const ctx = canvas.getContext("2d")!;
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const d = imageData.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-          const val = gray < 140 ? 0 : 255;
-          d[i] = d[i + 1] = d[i + 2] = val;
-        }
-        ctx.putImageData(imageData, 0, 0);
+        ctx.filter = "contrast(1.8) grayscale(1)";
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob((blob) => resolve(blob!), "image/png");
       };
