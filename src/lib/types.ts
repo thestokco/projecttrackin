@@ -24,7 +24,7 @@ export interface Submission {
   submission_time: string;
   completion_date: string;
   application_number: string;
-  cable_return: boolean;
+  cable_return: boolean | null;
   cable_return_date: string | null;
   photos: string[];
   location: string | null;

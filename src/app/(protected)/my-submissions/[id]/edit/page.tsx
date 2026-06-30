@@ -25,7 +25,7 @@ export default function EditSubmissionPage() {
 
   const [completionDate, setCompletionDate] = useState("");
   const [applicationNumber, setApplicationNumber] = useState("");
-  const [cableReturn, setCableReturn] = useState(false);
+  const [cableReturn, setCableReturn] = useState<"no" | "yes" | "na">("no");
   const [cableReturnDate, setCableReturnDate] = useState("");
   const [location, setLocation] = useState("");
   const [remark, setRemark] = useState("");
@@ -45,7 +45,7 @@ export default function EditSubmissionPage() {
       setSubmission(data);
       setCompletionDate(data.completion_date);
       setApplicationNumber(data.application_number);
-      setCableReturn(data.cable_return);
+      setCableReturn(data.cable_return === true ? "yes" : data.cable_return === false ? "no" : "na");
       setCableReturnDate(data.cable_return_date || "");
       setLocation(data.location || "");
       setRemark(data.remark || "");
@@ -158,8 +158,8 @@ export default function EditSubmissionPage() {
       const updates = {
         completion_date: completionDate,
         application_number: applicationNumber,
-        cable_return: cableReturn,
-        cable_return_date: cableReturn ? cableReturnDate || null : null,
+        cable_return: cableReturn === "yes" ? true : cableReturn === "no" ? false : null,
+        cable_return_date: cableReturn === "yes" ? cableReturnDate || null : null,
         location: location || null,
         remark: remark || null,
         photos: allPhotos,
@@ -273,9 +273,9 @@ export default function EditSubmissionPage() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setCableReturn(false)}
+                onClick={() => setCableReturn("no")}
                 className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
-                  !cableReturn
+                  cableReturn === "no"
                     ? "bg-red-50 border-rose-300 text-rose-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
@@ -284,19 +284,30 @@ export default function EditSubmissionPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setCableReturn(true)}
+                onClick={() => setCableReturn("yes")}
                 className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
-                  cableReturn
+                  cableReturn === "yes"
                     ? "bg-emerald-50 border-emerald-300 text-emerald-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
               >
                 Yes
               </button>
+              <button
+                type="button"
+                onClick={() => setCableReturn("na")}
+                className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
+                  cableReturn === "na"
+                    ? "bg-gray-100 border-gray-300 text-gray-600"
+                    : "border-border text-muted hover:border-gray-300"
+                }`}
+              >
+                N/A
+              </button>
             </div>
           </div>
 
-          {cableReturn && (
+          {cableReturn === "yes" && (
             <div>
               <label className="block text-[13px] font-medium mb-1">Cable Return Date</label>
               <input

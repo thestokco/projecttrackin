@@ -178,12 +178,12 @@ function LayoutShell({ children }: { children: React.ReactNode }) {
         )}
       </header>
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-4 pb-20 md:pb-4">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-4 pb-28 md:pb-4">
         {children}
       </main>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-border/30 z-50">
-        <div className="flex items-center justify-around h-14 px-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-border/30 z-50" style={{ paddingBottom: "env(safe-area-inset-bottom, 12px)" }}>
+        <div className="flex items-center justify-around h-16 px-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.href);

@@ -13,7 +13,7 @@ export default function FormPage() {
   const [userId, setUserId] = useState("");
   const [completionDate, setCompletionDate] = useState("");
   const [applicationNumber, setApplicationNumber] = useState("");
-  const [cableReturn, setCableReturn] = useState(false);
+  const [cableReturn, setCableReturn] = useState<"no" | "yes" | "na">("no");
   const [cableReturnDate, setCableReturnDate] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -154,6 +154,7 @@ export default function FormPage() {
       const now = new Date();
 
       if (isDemo) {
+        const cableReturnValue = cableReturn === "yes" ? true : cableReturn === "no" ? false : null;
         mockStore.addSubmission({
           user_id: userId,
           user_name: userName,
@@ -161,8 +162,8 @@ export default function FormPage() {
           submission_time: format(now, "HH:mm:ss"),
           completion_date: completionDate,
           application_number: applicationNumber,
-          cable_return: cableReturn,
-          cable_return_date: cableReturn ? cableReturnDate || null : null,
+          cable_return: cableReturnValue,
+          cable_return_date: cableReturn === "yes" ? cableReturnDate || null : null,
           location: location || null,
           photos: photoPreviews,
           remark: remark || null,
@@ -190,6 +191,7 @@ export default function FormPage() {
           photoUrls.push(publicUrl);
         }
 
+        const cableReturnValue = cableReturn === "yes" ? true : cableReturn === "no" ? false : null;
         const { error: insertError } = await supabase
           .from("submissions")
           .insert({
@@ -199,8 +201,8 @@ export default function FormPage() {
             submission_time: format(now, "HH:mm:ss"),
             completion_date: completionDate,
             application_number: applicationNumber,
-            cable_return: cableReturn,
-            cable_return_date: cableReturn ? cableReturnDate || null : null,
+            cable_return: cableReturnValue,
+            cable_return_date: cableReturn === "yes" ? cableReturnDate || null : null,
             location: location || null,
             photos: photoUrls,
             remark: remark || null,
@@ -212,7 +214,7 @@ export default function FormPage() {
       setSuccess(true);
       setCompletionDate("");
       setApplicationNumber("");
-      setCableReturn(false);
+      setCableReturn("no");
       setCableReturnDate("");
       setLocation("");
       setPhotos([]);
@@ -334,9 +336,9 @@ export default function FormPage() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setCableReturn(false)}
+                onClick={() => setCableReturn("no")}
                 className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
-                  !cableReturn
+                  cableReturn === "no"
                     ? "bg-red-50 border-rose-300 text-rose-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
@@ -345,19 +347,30 @@ export default function FormPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setCableReturn(true)}
+                onClick={() => setCableReturn("yes")}
                 className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
-                  cableReturn
+                  cableReturn === "yes"
                     ? "bg-emerald-50 border-emerald-300 text-emerald-600"
                     : "border-border text-muted hover:border-gray-300"
                 }`}
               >
                 Yes
               </button>
+              <button
+                type="button"
+                onClick={() => setCableReturn("na")}
+                className={`flex-1 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
+                  cableReturn === "na"
+                    ? "bg-gray-100 border-gray-300 text-gray-600"
+                    : "border-border text-muted hover:border-gray-300"
+                }`}
+              >
+                N/A
+              </button>
             </div>
           </div>
 
-          {cableReturn && (
+          {cableReturn === "yes" && (
             <div>
               <label className="block text-[13px] font-medium mb-1">
                 Cable Return Date
