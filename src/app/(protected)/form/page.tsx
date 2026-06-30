@@ -98,26 +98,6 @@ export default function FormPage() {
     setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function preprocessImage(file: File): Promise<Blob> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const maxDim = Math.max(img.width, img.height);
-        const scale = maxDim < 1500 ? 1500 / maxDim : 1;
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext("2d")!;
-
-        ctx.filter = "contrast(1.8) grayscale(1)";
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob((blob) => resolve(blob!), "image/png");
-      };
-      img.src = URL.createObjectURL(file);
-    });
-  }
-
   async function handleScan(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -126,10 +106,9 @@ export default function FormPage() {
     setError("");
 
     try {
-      const processed = await preprocessImage(file);
       const { createWorker } = await import("tesseract.js");
       const worker = await createWorker("eng");
-      const { data: { text } } = await worker.recognize(processed);
+      const { data: { text } } = await worker.recognize(file);
       await worker.terminate();
 
       setScanText(text);
