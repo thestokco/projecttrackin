@@ -79,7 +79,7 @@ export default function DashboardPage() {
     end: new Date(),
   }).reverse();
 
-  const pendingCableReturn = submissions.filter((s) => !s.cable_return);
+  const pendingCableReturn = submissions.filter((s) => s.cable_return === false);
 
   const submissionsByUser: Record<string, number> = {};
   submissions.forEach((s) => {

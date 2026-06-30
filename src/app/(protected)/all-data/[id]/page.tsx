@@ -102,12 +102,14 @@ export default function DetailPage() {
             value={
               <span
                 className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                  submission.cable_return
+                  submission.cable_return === true
                     ? "bg-emerald-50 text-emerald-700"
-                    : "bg-red-50 text-red-600"
+                    : submission.cable_return === false
+                    ? "bg-red-50 text-red-600"
+                    : "bg-gray-100 text-gray-500"
                 }`}
               >
-                {submission.cable_return ? "Yes" : "No"}
+                {submission.cable_return === true ? "Yes" : submission.cable_return === false ? "No" : "N/A"}
               </span>
             }
           />

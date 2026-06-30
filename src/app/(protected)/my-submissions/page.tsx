@@ -149,12 +149,14 @@ export default function MySubmissionsPage() {
                     <td className="px-3 py-2.5">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                          s.cable_return
+                          s.cable_return === true
                             ? "bg-emerald-50 text-emerald-700"
-                            : "bg-red-50 text-red-600"
+                            : s.cable_return === false
+                            ? "bg-red-50 text-red-600"
+                            : "bg-gray-100 text-gray-500"
                         }`}
                       >
-                        {s.cable_return ? "Yes" : "No"}
+                        {s.cable_return === true ? "Yes" : s.cable_return === false ? "No" : "N/A"}
                       </span>
                     </td>
                     <td className="px-3 py-2.5">

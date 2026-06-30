@@ -153,7 +153,7 @@ export default function AllDataPage() {
       "Submission Time": s.submission_time,
       "Completion Date": s.completion_date,
       "Application Number": s.application_number,
-      "Cable Return": s.cable_return ? "Yes" : "No",
+      "Cable Return": s.cable_return === true ? "Yes" : s.cable_return === false ? "No" : "N/A",
       "Cable Return Date": s.cable_return_date || "-",
       Location: s.location || "-",
       "Photo Count": s.photos?.length || 0,
@@ -303,8 +303,8 @@ export default function AllDataPage() {
                     <td className="px-3 py-2.5 text-[13px] font-mono">{s.application_number}</td>
                     <td className="px-3 py-2.5 text-[13px]">{s.location || "-"}</td>
                     <td className="px-3 py-2.5">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${s.cable_return ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>
-                        {s.cable_return ? "Yes" : "No"}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${s.cable_return === true ? "bg-emerald-50 text-emerald-700" : s.cable_return === false ? "bg-red-50 text-red-600" : "bg-gray-100 text-gray-500"}`}>
+                        {s.cable_return === true ? "Yes" : s.cable_return === false ? "No" : "N/A"}
                       </span>
                     </td>
                     <td className="px-3 py-2.5 text-[13px]">
