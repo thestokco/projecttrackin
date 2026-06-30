@@ -135,6 +135,7 @@ export default function FormPage() {
         const parts = dateMatch[1].split(/[./]/);
         if (parts.length === 3) {
           const formatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          alert("v3: Date " + formatted + " → Cable Return Date");
           setCableReturnDate(formatted);
           setCompletionDate("");
         }
