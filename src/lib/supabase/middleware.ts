@@ -33,7 +33,8 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname === "/login" ||
     request.nextUrl.pathname === "/signup" ||
     request.nextUrl.pathname === "/forgot-password" ||
-    request.nextUrl.pathname === "/reset-password";
+    request.nextUrl.pathname === "/reset-password" ||
+    request.nextUrl.pathname === "/auth/callback";
 
   const isLoginPage =
     request.nextUrl.pathname === "/login" ||

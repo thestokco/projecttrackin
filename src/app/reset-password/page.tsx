@@ -25,13 +25,34 @@ export default function ResetPasswordPage() {
       }
     });
 
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const tokenHash = params.get("token_hash");
+    const type = params.get("type");
+
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (error) setSessionError(true);
+        else setSessionReady(true);
+      });
+      return;
+    }
+
+    if (tokenHash && type === "recovery") {
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" }).then(({ error }) => {
+        if (error) setSessionError(true);
+        else setSessionReady(true);
+      });
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setSessionReady(true);
       } else {
         setTimeout(() => {
           setSessionError(true);
-        }, 3000);
+        }, 5000);
       }
     });
   }, []);
