@@ -23,6 +23,7 @@ export default function FormPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [scanning, setScanning] = useState(false);
+  const [scanText, setScanText] = useState("");
 
   const loadUser = useCallback(async () => {
     if (isDemo) {
@@ -110,18 +111,23 @@ export default function FormPage() {
       const { data: { text } } = await worker.recognize(file);
       await worker.terminate();
 
-      const projectMatch = text.match(/Project\s*No[.\s/]*Cost\s*Center\s*[:\s]*\S*?(\d{6,})/i);
+      setScanText(text);
+
+      const projectMatch = text.match(/Project\s*No[.\s/]*Cost\s*Center\s*[:\s]*\S*?(\d{6,})/i)
+        || text.match(/Project\s*No\.?\s*[:/]?\s*(\d{6,})/i)
+        || text.match(/(\d{6,})/);
       if (projectMatch) {
         setApplicationNumber(projectMatch[1]);
       }
 
-      const locationMatch = text.match(/Job\s*Location\s*[:\s]*(.+)/i);
+      const locationMatch = text.match(/Job\s*Location\s*[:\s]*(.+)/i)
+        || text.match(/Location\s*[:\s]*(.+)/i);
       if (locationMatch) {
         const loc = locationMatch[1].replace(/^\s*[:]\s*/, "").trim();
         setLocation(loc);
       }
 
-      const dateMatch = text.match(/Date\s*[:\s]*(\d{2}[./]\d{2}[./]\d{4})/i);
+      const dateMatch = text.match(/(\d{2}[./]\d{2}[./]\d{4})/);
       if (dateMatch) {
         const parts = dateMatch[1].split(/[./]/);
         if (parts.length === 3) {
@@ -400,6 +406,13 @@ export default function FormPage() {
                 className="hidden"
               />
             </label>
+
+            {scanText && (
+              <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-[10px] font-semibold text-yellow-700 mb-1">OCR Debug (will be removed):</p>
+                <pre className="text-[10px] text-yellow-800 whitespace-pre-wrap break-words max-h-32 overflow-y-auto">{scanText}</pre>
+              </div>
+            )}
 
             <div className="flex flex-wrap gap-2">
               {photoPreviews.map((src, i) => (
