@@ -4,7 +4,9 @@ export async function proxy(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
     const isAuthPage =
       request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/signup";
+      request.nextUrl.pathname === "/signup" ||
+      request.nextUrl.pathname === "/forgot-password" ||
+      request.nextUrl.pathname === "/reset-password";
 
     if (isAuthPage) {
       const url = request.nextUrl.clone();

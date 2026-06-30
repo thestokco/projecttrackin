@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Lock,
   Type,
+  KeyRound,
 } from "lucide-react";
 import PullToRefresh from "@/components/PullToRefresh";
 import { getFontSize, setFontSize, FONT_SIZES, type FontSize } from "@/lib/font-size";
@@ -139,6 +140,12 @@ export default function SettingsPage() {
   }
 
   const [removeError, setRemoveError] = useState("");
+  const [resetId, setResetId] = useState<string | null>(null);
+  const [resetName, setResetName] = useState("");
+  const [resetPassword, setResetPassword] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
+  const [resetPasswordError, setResetPasswordError] = useState("");
   const [fontSize, setFontSizeState] = useState<FontSize>("medium");
 
   useEffect(() => {
@@ -164,6 +171,47 @@ export default function SettingsPage() {
       setMembers((prev) => prev.filter((m) => m.id !== memberId));
     }
     setRemoveId(null);
+  }
+
+  async function handleResetPassword() {
+    if (!resetId) return;
+    setResetPasswordError("");
+
+    if (!resetPassword || resetPassword.length < 6) {
+      setResetPasswordError("Password must be at least 6 characters");
+      return;
+    }
+
+    setResettingPassword(true);
+
+    try {
+      if (isDemo) {
+        // no-op in demo
+      } else {
+        const res = await fetch("/api/admin/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: resetId, newPassword: resetPassword }),
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to reset password");
+        }
+      }
+
+      setResetPasswordSuccess(true);
+      setTimeout(() => {
+        setResetId(null);
+        setResetPassword("");
+        setResetPasswordSuccess(false);
+        setResetPasswordError("");
+      }, 2000);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to reset password";
+      setResetPasswordError(message);
+    } finally {
+      setResettingPassword(false);
+    }
   }
 
   async function handleSaveProfile(e: React.FormEvent) {
@@ -511,13 +559,22 @@ export default function SettingsPage() {
                       {format(new Date(m.created_at), "dd MMM yy")}
                     </span>
                     {m.id !== profile?.id && (
-                      <button
-                        onClick={() => setRemoveId(m.id)}
-                        className="p-1 rounded-lg text-muted hover:text-danger hover:bg-red-50 transition-colors"
-                        title="Remove member"
-                      >
-                        <UserX className="w-3.5 h-3.5" />
-                      </button>
+                      <>
+                        <button
+                          onClick={() => { setResetId(m.id); setResetName(m.name); setResetPassword(""); setResetPasswordError(""); setResetPasswordSuccess(false); }}
+                          className="p-1 rounded-lg text-muted hover:text-primary hover:bg-primary/10 transition-colors"
+                          title="Reset password"
+                        >
+                          <KeyRound className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setRemoveId(m.id)}
+                          className="p-1 rounded-lg text-muted hover:text-danger hover:bg-red-50 transition-colors"
+                          title="Remove member"
+                        >
+                          <UserX className="w-3.5 h-3.5" />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -577,6 +634,61 @@ export default function SettingsPage() {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {resetId && (
+        <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-5 max-w-xs w-full animate-slide-up">
+            <h3 className="text-[15px] font-semibold mb-1.5 flex items-center gap-1.5">
+              <KeyRound className="w-4 h-4 text-primary" />
+              Reset Password
+            </h3>
+            <p className="text-[13px] text-muted mb-4">
+              Set a new password for <strong>{resetName}</strong>
+            </p>
+
+            {resetPasswordSuccess && (
+              <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl p-2.5 mb-3 flex items-center gap-2 text-[13px]">
+                <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                Password reset successfully
+              </div>
+            )}
+
+            {resetPasswordError && (
+              <div className="bg-red-50 text-danger border border-red-100 rounded-xl p-2.5 mb-3 text-[13px]">
+                {resetPasswordError}
+              </div>
+            )}
+
+            {!resetPasswordSuccess && (
+              <>
+                <input
+                  type="text"
+                  value={resetPassword}
+                  onChange={(e) => setResetPassword(e.target.value)}
+                  placeholder="New password (min 6 chars)"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary mb-4"
+                  autoComplete="off"
+                />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleResetPassword}
+                    disabled={resettingPassword}
+                    className="flex-1 gradient-bg text-white py-2 rounded-xl text-[13px] font-medium hover:opacity-90 transition-all disabled:opacity-50"
+                  >
+                    {resettingPassword ? "Resetting..." : "Reset Password"}
+                  </button>
+                  <button
+                    onClick={() => { setResetId(null); setResetPassword(""); setResetPasswordError(""); }}
+                    className="flex-1 border border-border py-2 rounded-xl text-[13px] font-medium hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
