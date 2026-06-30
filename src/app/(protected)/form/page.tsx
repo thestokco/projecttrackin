@@ -110,11 +110,12 @@ export default function FormPage() {
       const { data: { text } } = await worker.recognize(file);
       await worker.terminate();
 
-      // Project No: extract long number from "Project No./Cost Center : DJT/J1110198665"
+      // Project No: extract number from "Project No./Cost Center : DJT/J1110198665" → 1110198665
       const projectMatch = text.match(/Project\s*No\.?\s*[/\\]?\s*Cost\s*Center\s*[:\s]+\S*?(\d{7,})/i)
         || text.match(/Cost\s*Center\s*[:\s]+\S*?(\d{7,})/i)
         || text.match(/Project\s*No\.?\s*[:\s]+\S*?(\d{7,})/i)
-        || text.match(/Contract\s*No\.?\s*[:\s]+(\d{5,})/i);
+        || text.match(/DJT\S*?(\d{7,})/i)
+        || text.match(/[A-Z]{2,4}[/\\][A-Z](\d{7,})/i);
       if (projectMatch) {
         setApplicationNumber(projectMatch[1]);
       }
