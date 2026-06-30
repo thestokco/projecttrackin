@@ -340,17 +340,70 @@ export default function FormPage() {
           </div>
 
           {cableReturn === "yes" && (
-            <div>
-              <label className="block text-[13px] font-medium mb-1">
-                Cable Return Date
-              </label>
-              <input
-                type="date"
-                value={cableReturnDate}
-                onChange={(e) => setCableReturnDate(e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-[13px] font-medium mb-1">
+                  Cable Return Date
+                </label>
+                <input
+                  type="date"
+                  value={cableReturnDate}
+                  onChange={(e) => setCableReturnDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium mb-1.5">
+                  Photos <span className="text-muted font-normal">(max 5 photos)</span>
+                </label>
+
+                <label className={`relative flex items-center justify-center gap-2 w-full py-2.5 mb-3 rounded-xl text-[13px] font-semibold border-2 border-dashed transition-colors cursor-pointer overflow-hidden ${scanning ? "border-blue-400 bg-blue-50 text-blue-600" : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted hover:text-primary"}`}>
+                  {scanning && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/50 to-transparent animate-scan-sweep" />}
+                  <ScanLine className={`w-4 h-4 ${scanning ? "animate-pulse" : ""}`} />
+                  {scanning ? "Scanning document..." : "Scan & Add Document"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleScan}
+                    disabled={scanning}
+                    className="hidden"
+                  />
+                </label>
+
+                <div className="flex flex-wrap gap-2">
+                  {photoPreviews.map((src, i) => (
+                    <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
+                      <img
+                        src={src}
+                        alt={`Photo ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(i)}
+                        className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </div>
+                  ))}
+                  {photos.length < 5 && (
+                    <label className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                      <ImagePlus className="w-4 h-4 text-muted" />
+                      <span className="text-[9px] text-muted mt-0.5">Add</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        multiple
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+            </>
           )}
 
           <div>
@@ -391,58 +444,6 @@ export default function FormPage() {
               className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               placeholder="Enter location"
             />
-          </div>
-
-          <div>
-            <label className="block text-[13px] font-medium mb-1.5">
-              Photos <span className="text-muted font-normal">(max 5 photos)</span>
-            </label>
-
-            <label className={`relative flex items-center justify-center gap-2 w-full py-2.5 mb-3 rounded-xl text-[13px] font-semibold border-2 border-dashed transition-colors cursor-pointer overflow-hidden ${scanning ? "border-blue-400 bg-blue-50 text-blue-600" : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted hover:text-primary"}`}>
-              {scanning && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/50 to-transparent animate-scan-sweep" />}
-              <ScanLine className={`w-4 h-4 ${scanning ? "animate-pulse" : ""}`} />
-              {scanning ? "Scanning document..." : "Scan & Add Document"}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleScan}
-                disabled={scanning}
-                className="hidden"
-              />
-            </label>
-
-
-            <div className="flex flex-wrap gap-2">
-              {photoPreviews.map((src, i) => (
-                <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
-                  <img
-                    src={src}
-                    alt={`Photo ${i + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removePhoto(i)}
-                    className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5"
-                  >
-                    <X className="w-2.5 h-2.5" />
-                  </button>
-                </div>
-              ))}
-              {photos.length < 5 && (
-                <label className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
-                  <ImagePlus className="w-4 h-4 text-muted" />
-                  <span className="text-[9px] text-muted mt-0.5">Add</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoChange}
-                    multiple
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
           </div>
 
           <div>
