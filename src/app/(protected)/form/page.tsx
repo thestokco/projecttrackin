@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mockStore } from "@/lib/mock-store";
 import { format } from "date-fns";
-import { Send, ImagePlus, X, CheckCircle } from "lucide-react";
+import { Send, ImagePlus, X, CheckCircle, ScanLine } from "lucide-react";
 import PullToRefresh from "@/components/PullToRefresh";
 
 export default function FormPage() {
@@ -22,6 +22,7 @@ export default function FormPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [scanning, setScanning] = useState(false);
 
   const loadUser = useCallback(async () => {
     if (isDemo) {
@@ -94,6 +95,54 @@ export default function FormPage() {
   function removePhoto(index: number) {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
     setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function handleScan(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setScanning(true);
+    setError("");
+
+    try {
+      const { createWorker } = await import("tesseract.js");
+      const worker = await createWorker("eng");
+      const { data: { text } } = await worker.recognize(file);
+      await worker.terminate();
+
+      const projectMatch = text.match(/Project\s*No[.\s/]*Cost\s*Center\s*[:\s]*\S*?(\d{6,})/i);
+      if (projectMatch) {
+        setApplicationNumber(projectMatch[1]);
+      }
+
+      const locationMatch = text.match(/Job\s*Location\s*[:\s]*(.+)/i);
+      if (locationMatch) {
+        const loc = locationMatch[1].replace(/^\s*[:]\s*/, "").trim();
+        setLocation(loc);
+      }
+
+      const dateMatch = text.match(/Date\s*[:\s]*(\d{2}[./]\d{2}[./]\d{4})/i);
+      if (dateMatch) {
+        const parts = dateMatch[1].split(/[./]/);
+        if (parts.length === 3) {
+          setCompletionDate(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        }
+      }
+
+      if (photos.length < 5) {
+        setPhotos((prev) => [...prev, file]);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPhotoPreviews((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch {
+      setError("Failed to scan document. Please try again.");
+    } finally {
+      setScanning(false);
+      e.target.value = "";
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -326,6 +375,20 @@ export default function FormPage() {
             <label className="block text-[13px] font-medium mb-1.5">
               Photos <span className="text-muted font-normal">(max 5 photos)</span>
             </label>
+
+            <label className={`flex items-center justify-center gap-2 w-full py-2.5 mb-3 rounded-xl text-[13px] font-semibold border-2 border-dashed transition-colors cursor-pointer ${scanning ? "border-primary/40 bg-primary/5 text-primary" : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted hover:text-primary"}`}>
+              <ScanLine className="w-4 h-4" />
+              {scanning ? "Scanning document..." : "Scan Document"}
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleScan}
+                disabled={scanning}
+                className="hidden"
+              />
+            </label>
+
             <div className="flex flex-wrap gap-2">
               {photoPreviews.map((src, i) => (
                 <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
