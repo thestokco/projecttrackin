@@ -23,7 +23,6 @@ export default function FormPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [scanning, setScanning] = useState(false);
-  const [scanText, setScanText] = useState("");
 
   const loadUser = useCallback(async () => {
     if (isDemo) {
@@ -110,8 +109,6 @@ export default function FormPage() {
       const worker = await createWorker("eng");
       const { data: { text } } = await worker.recognize(file);
       await worker.terminate();
-
-      setScanText(text);
 
       // Project No: extract long number from "Project No./Cost Center : DJT/J1110198665"
       const projectMatch = text.match(/Project\s*No\.?\s*[/\\]?\s*Cost\s*Center\s*[:\s]+\S*?(\d{7,})/i)
@@ -414,12 +411,7 @@ export default function FormPage() {
               />
             </label>
 
-            {scanText && (
-              <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-[10px] font-semibold text-yellow-700 mb-1">OCR Debug (will be removed):</p>
-                <pre className="text-[10px] text-yellow-800 whitespace-pre-wrap break-words max-h-32 overflow-y-auto">{scanText}</pre>
-              </div>
-            )}
+
 
             <div className="flex flex-wrap gap-2">
               {photoPreviews.map((src, i) => (
