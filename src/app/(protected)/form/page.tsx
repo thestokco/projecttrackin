@@ -404,7 +404,7 @@ export default function FormPage() {
 
             <label className={`flex items-center justify-center gap-2 w-full py-2.5 mb-3 rounded-xl text-[13px] font-semibold border-2 border-dashed transition-colors cursor-pointer ${scanning ? "border-primary/40 bg-primary/5 text-primary" : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted hover:text-primary"}`}>
               <ScanLine className="w-4 h-4" />
-              {scanning ? "Scanning document..." : "Scan Document"}
+              {scanning ? "Scanning document..." : "Scan & Add Document"}
               <input
                 type="file"
                 accept="image/*"
