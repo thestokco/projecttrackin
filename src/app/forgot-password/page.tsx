@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
     });
 
     if (error) {
-      setError(error.message);
+      setError(error.message || "Failed to send reset email. Please try again later.");
       setLoading(false);
       return;
     }
