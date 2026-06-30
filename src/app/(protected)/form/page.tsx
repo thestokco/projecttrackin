@@ -342,18 +342,6 @@ export default function FormPage() {
           {cableReturn === "yes" && (
             <>
               <div>
-                <label className="block text-[13px] font-medium mb-1">
-                  Cable Return Date
-                </label>
-                <input
-                  type="date"
-                  value={cableReturnDate}
-                  onChange={(e) => setCableReturnDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
-                />
-              </div>
-
-              <div>
                 <label className="block text-[13px] font-medium mb-1.5">
                   Photos <span className="text-muted font-normal">(max 5 photos)</span>
                 </label>
@@ -403,21 +391,20 @@ export default function FormPage() {
                   )}
                 </div>
               </div>
+
+              <div>
+                <label className="block text-[13px] font-medium mb-1">
+                  Cable Return Date
+                </label>
+                <input
+                  type="date"
+                  value={cableReturnDate}
+                  onChange={(e) => setCableReturnDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
+                />
+              </div>
             </>
           )}
-
-          <div>
-            <label className="block text-[13px] font-medium mb-1">
-              Completion Date <span className="text-danger">*</span>
-            </label>
-            <input
-              type="date"
-              value={completionDate}
-              onChange={(e) => setCompletionDate(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
-            />
-          </div>
 
           <div>
             <label className="block text-[13px] font-medium mb-1">
@@ -443,6 +430,19 @@ export default function FormPage() {
               onChange={(e) => setLocation(e.target.value)}
               className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
               placeholder="Enter location"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium mb-1">
+              Completion Date <span className="text-danger">*</span>
+            </label>
+            <input
+              type="date"
+              value={completionDate}
+              onChange={(e) => setCompletionDate(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-border rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary"
             />
           </div>
 
