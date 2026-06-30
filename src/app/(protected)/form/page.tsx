@@ -126,7 +126,7 @@ export default function FormPage() {
         setLocation(loc);
       }
 
-      // Date: get from "Prepared By" section — OCR may read "pate" instead of "Date"
+      // Date: "Prepared By" date → Cable Return Date (not Completion Date)
       const preparedDateMatch = text.match(/Prepared\s*By[\s\S]*?[dp]ate\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
       const standaloneDateMatch = text.match(/(?<![Ee]xpiry\s)[dp]ate\s*[:\s]+(\d{2}[./]\d{2}[./]\d{4})/i);
       const anyDateMatch = text.match(/(\d{2}\.\d{2}\.\d{4})/);
@@ -134,7 +134,7 @@ export default function FormPage() {
       if (dateMatch) {
         const parts = dateMatch[1].split(/[./]/);
         if (parts.length === 3) {
-          setCompletionDate(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          setCableReturnDate(`${parts[2]}-${parts[1]}-${parts[0]}`);
         }
       }
 
