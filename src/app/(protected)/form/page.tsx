@@ -135,7 +135,6 @@ export default function FormPage() {
         const parts = dateMatch[1].split(/[./]/);
         if (parts.length === 3) {
           const formatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
-          alert("v3: Date " + formatted + " → Cable Return Date");
           setCableReturnDate(formatted);
           setCompletionDate("");
         }
@@ -348,6 +347,8 @@ export default function FormPage() {
                 <label className="block text-[13px] font-medium mb-1.5">
                   Photos <span className="text-muted font-normal">(max 5 photos)</span>
                 </label>
+
+                <p className="text-[11px] text-muted mb-1.5">Only clear documents can be scanned accurately.</p>
 
                 <label className={`relative flex items-center justify-center gap-2 w-full py-2.5 mb-3 rounded-xl text-[13px] font-semibold border-2 border-dashed transition-colors cursor-pointer overflow-hidden ${scanning ? "border-blue-400 bg-blue-50 text-blue-600" : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted hover:text-primary"}`}>
                   {scanning && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/50 to-transparent animate-scan-sweep" />}
